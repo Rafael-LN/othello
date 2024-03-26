@@ -1,6 +1,6 @@
-package server;
+package src.server;
 
-import client.ClientHandler;
+import src.client.ClientHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,7 +17,7 @@ public class OthelloServer {
             System.out.println("Server started. Listening on port " + PORT);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected: " + clientSocket);
+                System.out.println("New src.client connected: " + clientSocket);
                 ClientHandler clientHandler = new ClientHandler(clientSocket, clients);
                 clients.add(clientHandler);
                 new Thread(clientHandler).start();

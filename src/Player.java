@@ -1,3 +1,5 @@
+package src;
+
 import java.io.Serializable;
 
 public class Player implements Serializable {
@@ -5,14 +7,14 @@ public class Player implements Serializable {
     private String password;
     private String nationality;
     private int age;
-    private String photo;
+    private String photoUrl;
 
-    public Player(String nickname, String password, String nationality, int age, String photo) {
+    public Player(String nickname, String password, String nationality, int age, String photoUrl) {
         this.nickname = nickname;
         this.password = password;
         this.nationality = nationality;
         this.age = age;
-        this.photo = photo;
+        this.photoUrl = photoUrl;
     }
 
     // Getters and setters
@@ -48,12 +50,12 @@ public class Player implements Serializable {
         this.age = age;
     }
 
-    public String getPhoto() {
-        return photo;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     // toString method to print player information for testing

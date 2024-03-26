@@ -1,0 +1,64 @@
+package src;
+
+import src.tabuleiroGUI.CelulaEstado;
+import src.tabuleiroGUI.ClickHandler;
+import src.tabuleiroGUI.JPanelTabuleiro;
+
+import javax.swing.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        testarTabuleiro4EmLinha();
+    }
+
+    private static void testarTabuleiro4EmLinha() {
+        System.out.println("Teste...");
+        JFrame j = new JFrame();
+        j.setSize(500,500);
+        j.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        JPanelTabuleiro tab = new JPanelTabuleiro(8,8);
+        j.setContentPane(tab);
+
+        // para colocar o nosso tabuleiro em readOnly apos inicio do jogo
+        //tab.setReadOnly(true);
+
+        j.setVisible(true);
+
+        tab.setCelula(7, 0, CelulaEstado.JOG1);
+        tab.setCelula(7, 1, CelulaEstado.JOG2);
+
+        tab.setCelula(7, 4, CelulaEstado.JOG1);
+        tab.setCelula(7, 5, CelulaEstado.JOG2);
+        tab.setCelula(6, 4, CelulaEstado.JOG1);
+        tab.setCelula(6, 5, CelulaEstado.JOG2);
+
+        // TESTES PARA JOGO DO 4 EM LINHA
+        // Fase de Jogo
+        System.out.println();
+        System.out.println("################################");
+        System.out.println("       ...Fase de JOGO...");
+        System.out.println("################################");
+        ClickHandler chJogo = new ClickHandler(){
+            @Override
+            public void clicked(int linha,int coluna,int estado) {
+                System.out.println("...CLICK...");
+                System.out.println("linha: " + linha);
+                System.out.println("coluna: " + coluna);
+                System.out.println("estado anterior: " + CelulaEstado.decodeEstadoString(estado));
+                if(estado == CelulaEstado.LIVRE)
+                    tab.setCelula(linha, coluna, CelulaEstado.JOG1);
+                if(estado == CelulaEstado.JOG1)
+                    tab.setCelula(linha, coluna, CelulaEstado.JOG2);
+                if(estado == CelulaEstado.JOG2)
+                    tab.setCelula(linha, coluna, CelulaEstado.LIVRE);
+                System.out.println("estado novo: " + tab.getCelulaEstadoString(linha, coluna));
+
+            }
+        };
+
+        tab.setClickHandler(chJogo);
+
+    }
+}
