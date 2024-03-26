@@ -58,5 +58,8 @@ public class Player implements Serializable {
         this.photoUrl = photoUrl;
     }
 
+    public String toString() {
+        return nickname + " " + password + " " + nationality + " " + age + " " + photoUrl;
+    }
     // toString method to print player information for testing
 }
