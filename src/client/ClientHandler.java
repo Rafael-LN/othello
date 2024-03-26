@@ -1,8 +1,10 @@
 package src.client;
 
+import src.Player;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 
@@ -18,13 +20,29 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            InputStream inputStream = clientSocket.getInputStream();
-            OutputStream outputStream = clientSocket.getOutputStream();
+            ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 
-            // Lógica de comunicação com o cliente (leitura e escrita)
+            objectOutputStream.writeObject("Please provide player information: nickname, password, nationality, age, and photo URL");
+            objectOutputStream.flush();
+
+
+            Player player = (Player) objectInputStream.readObject();
+
+            objectOutputStream.writeObject("Received registration: " + player);
+            objectOutputStream.flush();
+
+            System.out.println("Received registration: " + player);
+
+            objectOutputStream.close();
+            objectInputStream.close();
+            clientSocket.close();
+            clients.remove(this);
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 }

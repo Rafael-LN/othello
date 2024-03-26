@@ -26,13 +26,9 @@ public class Main {
 
         j.setVisible(true);
 
-        tab.setCelula(7, 0, CelulaEstado.JOG1);
-        tab.setCelula(7, 1, CelulaEstado.JOG2);
+        tab.setCelula(7, 0, CelulaEstado.PRETA);
+        tab.setCelula(7, 1, CelulaEstado.BRANCA);
 
-        tab.setCelula(7, 4, CelulaEstado.JOG1);
-        tab.setCelula(7, 5, CelulaEstado.JOG2);
-        tab.setCelula(6, 4, CelulaEstado.JOG1);
-        tab.setCelula(6, 5, CelulaEstado.JOG2);
 
         // TESTES PARA JOGO DO 4 EM LINHA
         // Fase de Jogo
@@ -48,10 +44,10 @@ public class Main {
                 System.out.println("coluna: " + coluna);
                 System.out.println("estado anterior: " + CelulaEstado.decodeEstadoString(estado));
                 if(estado == CelulaEstado.LIVRE)
-                    tab.setCelula(linha, coluna, CelulaEstado.JOG1);
-                if(estado == CelulaEstado.JOG1)
-                    tab.setCelula(linha, coluna, CelulaEstado.JOG2);
-                if(estado == CelulaEstado.JOG2)
+                    tab.setCelula(linha, coluna, CelulaEstado.PRETA);
+                if(estado == CelulaEstado.PRETA)
+                    tab.setCelula(linha, coluna, CelulaEstado.BRANCA);
+                if(estado == CelulaEstado.BRANCA)
                     tab.setCelula(linha, coluna, CelulaEstado.LIVRE);
                 System.out.println("estado novo: " + tab.getCelulaEstadoString(linha, coluna));
 
