@@ -16,4 +16,4 @@ The project will involve creating a Java application that implements the Othello
 
 ## Contributors
 - [Rafael Nunes](https://github.com/Rafael-LN)
-- [Tatiana Cristão](https://github.com/teammate1username)
+- [Tatiana Cristão](https://github.com/TatianaCristao)
