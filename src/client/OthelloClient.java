@@ -5,15 +5,15 @@ import src.Player;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class OthelloClient {
     private static final String SERVER_IP = "127.0.0.1";
     private static final int SERVER_PORT = 8080;
 
-    public static void registerPlayer(PrintWriter writer, BufferedReader reader) throws IOException {
+    public static Player registerPlayer(BufferedReader reader) throws IOException {
         // Solicitar ao jogador que forneça os dados de registro
         System.out.println("Nickname: ");
         String nickname = reader.readLine();
@@ -30,27 +30,33 @@ public class OthelloClient {
         System.out.println("URL da sua foto: ");
         String photoUrl = reader.readLine();
 
-        Player player = new Player(nickname, password, nationality, age, photoUrl);
-
-        // Enviar mensagem de registro para o servidor
-        writer.println("REGISTER;" + nickname + ";" + password + ";" + nationality + ";" + age + ";" + photoUrl);
-
-        // Receber e exibir resposta do servidor
-        String response = reader.readLine();
-        System.out.println("Server response: " + response);
+        return new Player(nickname, password, nationality, age, photoUrl);
     }
 
     public static void main(String[] args) {
-        try (Socket socket = new Socket(SERVER_IP, SERVER_PORT);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true)) {
+        try {
+            // Connect to the server
+            Socket socket = new Socket(SERVER_IP, SERVER_PORT);
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-            System.out.println("Connected to src.server.");
+            // Create a BufferedReader to read user input
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            // Lógica de comunicação com o servidor (leitura e escrita)
+            Player player = registerPlayer(reader);
+            // Send player information to the server for registration
+            out.writeObject(player);
+            out.flush();
 
+            // Receber e exibir resposta do servidor
+            String response = reader.readLine();
+            System.out.println("Server response: " + response);
 
-
+            // Close connections
+            out.close();
+            in.close();
+            socket.close();
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
