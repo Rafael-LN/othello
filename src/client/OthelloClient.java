@@ -40,6 +40,9 @@ public class OthelloClient {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
+            String message = (String) in.readObject();
+            System.out.println("Server: " + message);
+
             // Create a BufferedReader to read user input
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -48,10 +51,6 @@ public class OthelloClient {
             out.writeObject(player);
             out.flush();
 
-            // Receber e exibir resposta do servidor
-            String response = reader.readLine();
-            System.out.println("Server response: " + response);
-
             // Close connections
             out.close();
             in.close();
@@ -59,6 +58,8 @@ public class OthelloClient {
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 }
