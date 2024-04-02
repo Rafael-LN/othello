@@ -1,7 +1,6 @@
 package src;
 
 import src.tabuleiroGUI.CelulaEstado;
-import src.tabuleiroGUI.ClickHandler;
 import src.tabuleiroGUI.JPanelTabuleiro;
 
 import javax.swing.*;
@@ -10,51 +9,58 @@ public class Main {
 
     public static void main(String[] args) {
 
-        testarTabuleiro4EmLinha();
+        Game game = new Game(); // cria instância do jogo
+
+        // cria a interface gráfica do tabuleiro
+        SwingUtilities.invokeLater(() -> createAndShowGUI(game));
     }
 
-    private static void testarTabuleiro4EmLinha() {
-        System.out.println("Teste...");
-        JFrame j = new JFrame();
-        j.setSize(500,500);
-        j.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        JPanelTabuleiro tab = new JPanelTabuleiro(8,8);
-        j.setContentPane(tab);
+    /**
+     * Cria e exibe a interface gráfica do jogo
+     *
+     * @param game O objeto Game que contém a lógica do jogo.
+     */
+    private static void createAndShowGUI(Game game) {
+        JFrame frame = new JFrame("Othello"); // cria um novo JFrame com o título "Othello"
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // define o comportamento padrão de exit
 
-        // para colocar o nosso tabuleiro em readOnly apos inicio do jogo
-        //tab.setReadOnly(true);
+        JPanelTabuleiro tabuleiro = new JPanelTabuleiro(Game.SIZE, Game.SIZE); // cria um novo JPanelTabuleiro com as dimensões especificadas
+        frame.add(tabuleiro); // adiciona o painel do tabuleiro ao frame
 
-        j.setVisible(true);
+        frame.setSize(500,500); // define o tamanho inicial do frame
 
-        tab.setCelula(7, 0, CelulaEstado.PRETA);
-        tab.setCelula(7, 1, CelulaEstado.BRANCA);
+        //frame.pack();
+        frame.setVisible(true); // torna o frame visível na tela
 
+        // configura o handler de cliques para realizar as jogadas no tabuleiro
+        tabuleiro.setClickHandler((linha, coluna, estado) -> {
+            // faz uma jogada no jogo
+            game.makeMove(linha, coluna);
 
-        // TESTES PARA JOGO DO 4 EM LINHA
-        // Fase de Jogo
-        System.out.println();
-        System.out.println("################################");
-        System.out.println("       ...Fase de JOGO...");
-        System.out.println("################################");
-        ClickHandler chJogo = new ClickHandler(){
-            @Override
-            public void clicked(int linha,int coluna,int estado) {
-                System.out.println("...CLICK...");
-                System.out.println("linha: " + linha);
-                System.out.println("coluna: " + coluna);
-                System.out.println("estado anterior: " + CelulaEstado.decodeEstadoString(estado));
-                if(estado == CelulaEstado.LIVRE)
-                    tab.setCelula(linha, coluna, CelulaEstado.PRETA);
-                if(estado == CelulaEstado.PRETA)
-                    tab.setCelula(linha, coluna, CelulaEstado.BRANCA);
-                if(estado == CelulaEstado.BRANCA)
-                    tab.setCelula(linha, coluna, CelulaEstado.LIVRE);
-                System.out.println("estado novo: " + tab.getCelulaEstadoString(linha, coluna));
+            // atualiza o estado do tabuleiro gráfico com base no estado do jogo
+            updateTabuleiro(tabuleiro, game);
+        });
+    }
 
+    /**
+     * Atualiza o estado gráfico do tabuleiro com base no estado atual do jogo.
+     *
+     * @param tabuleiro O JPanelTabuleiro que representa o tabuleiro gráfico.
+     * @param game O objeto Game que contém o estado atual do jogo.
+     */
+    private static void updateTabuleiro(JPanelTabuleiro tabuleiro, Game game) {
+        int[][] board = game.getBoard(); // obtém o estado atual do tabuleiro do jogo
+
+        // percorre todas as células do tabuleiro
+        for (int i = 0; i < Game.SIZE; i++) {
+            for (int j = 0; j < Game.SIZE; j++) {
+                // verifica o estado da célula no tabuleiro do jogo e atualiza o estado gráfico correspondente no JPanelTabuleiro
+                if (board[i][j] == Game.BLACK) {
+                    tabuleiro.setCelula(i, j, CelulaEstado.PRETA); // define a célula como preta no JPanelTabuleiro
+                } else if (board[i][j] == Game.WHITE) {
+                    tabuleiro.setCelula(i, j, CelulaEstado.BRANCA); // define a célula como branca no JPanelTabuleiro
+                }
             }
-        };
-
-        tab.setClickHandler(chJogo);
-
+        }
     }
 }
