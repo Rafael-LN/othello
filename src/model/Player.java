@@ -8,6 +8,9 @@ public class Player implements Serializable {
     private String nationality;
     private int age;
     private String photoUrl;
+    private int wins;
+    private int losses;
+    private long timeSpent; // Time spent in milliseconds
 
     public Player(String nickname, String password, String nationality, int age, String photoUrl) {
         this.nickname = nickname;
@@ -58,13 +61,41 @@ public class Player implements Serializable {
         this.photoUrl = photoUrl;
     }
 
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public int getLosses() {
+        return losses;
+    }
+
+    public void setLosses(int losses) {
+        this.losses = losses;
+    }
+
+    public long getTimeSpent() {
+        return timeSpent;
+    }
+
+    public void setTimeSpent(long timeSpent) {
+        this.timeSpent = timeSpent;
+    }
+
     @Override
     public String toString() {
         return "Player{" +
                 "nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
                 ", nationality='" + nationality + '\'' +
-                ", age=" + age +
+                ", age=" + age + '\'' +
+                ", photoUrl='" + photoUrl + '\'' +
+                ", wins=" + wins + '\'' +
+                ", losses=" + losses + '\'' +
+                ", timeSpent=" + timeSpent + '\'' +
                 '}';
     }
 }
