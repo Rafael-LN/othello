@@ -1,4 +1,4 @@
-package src;
+package src.model;
 
 import java.io.Serializable;
 
@@ -58,8 +58,13 @@ public class Player implements Serializable {
         this.photoUrl = photoUrl;
     }
 
+    @Override
     public String toString() {
-        return nickname + " " + password + " " + nationality + " " + age + " " + photoUrl;
+        return "Player{" +
+                "nickname='" + nickname + '\'' +
+                ", password='" + password + '\'' +
+                ", nationality='" + nationality + '\'' +
+                ", age=" + age +
+                '}';
     }
-    // toString method to print player information for testing
 }

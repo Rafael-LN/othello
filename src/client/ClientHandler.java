@@ -1,6 +1,6 @@
 package src.client;
 
-import src.Player;
+import src.model.Player;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
