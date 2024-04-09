@@ -1,4 +1,4 @@
-package src.client;
+package src.server;
 
 import src.io.PlayerXmlHandler;
 import src.model.Player;
