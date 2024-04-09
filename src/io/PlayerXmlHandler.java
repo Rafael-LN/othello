@@ -136,6 +136,9 @@ public class PlayerXmlHandler {
         int wins = Integer.parseInt(rootElement.getElementsByTagName("wins").item(0).getTextContent());
         int losses = Integer.parseInt(rootElement.getElementsByTagName("losses").item(0).getTextContent());
         int timeSpent = Integer.parseInt(rootElement.getElementsByTagName("timeSpent").item(0).getTextContent());
-        return new Player(nickname, password, nationality, age, photoUrl, wins, losses, timeSpent);
+        Player player = new Player(nickname, password, nationality, age, photoUrl, timeSpent);
+        player.setWins(wins);
+        player.setLosses(losses);
+        return player;
     }
 }
