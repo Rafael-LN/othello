@@ -11,14 +11,15 @@ public class Player implements Serializable {
     private int wins = 0;
     private int losses = 0;
     private long timeSpent; // Time spent in milliseconds
+    private long startTime; // Start time
+    private long endTime; // End time
 
-    public Player(String nickname, String password, String nationality, int age, String photoUrl, long timeSpent) {
+    public Player(String nickname, String password, String nationality, int age, String photoUrl) {
         this.nickname = nickname;
         this.password = password;
         this.nationality = nationality;
         this.age = age;
         this.photoUrl = photoUrl;
-        this.timeSpent = timeSpent;
     }
 
     // Getters and setters
@@ -78,8 +79,24 @@ public class Player implements Serializable {
         this.losses = losses;
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
     public long getTimeSpent() {
-        return timeSpent;
+        return endTime - startTime;
     }
 
     public void setTimeSpent(long timeSpent) {
