@@ -1,6 +1,6 @@
 package src.server;
 
-import src.client.ClientHandler;
+import src.client.ServerHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class OthelloServer {
     private static final int PORT = 8080;
-    private static List<ClientHandler> clients = new ArrayList<>();
+    private static List<ServerHandler> clients = new ArrayList<>();
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -18,7 +18,7 @@ public class OthelloServer {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New src.client connected: " + clientSocket);
-                ClientHandler clientHandler = new ClientHandler(clientSocket, clients);
+                ServerHandler clientHandler = new ServerHandler(clientSocket, clients);
                 clients.add(clientHandler);
                 new Thread(clientHandler).start();
             }

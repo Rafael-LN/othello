@@ -9,13 +9,13 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 
-public class ClientHandler implements Runnable {
-    private Socket clientSocket;
-    private List<ClientHandler> clients;
+public class ServerHandler implements Runnable {
+    private Socket serverSocket;
+    private List<ServerHandler> clients;
     private PlayerXmlHandler playerXmlHandler;
 
-    public ClientHandler(Socket clientSocket, List<ClientHandler> clients) {
-        this.clientSocket = clientSocket;
+    public ServerHandler(Socket serverSocket, List<ServerHandler> clients) {
+        this.serverSocket = serverSocket;
         this.clients = clients;
         this.playerXmlHandler = new PlayerXmlHandler();
     }
@@ -23,8 +23,8 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            ObjectInputStream objectInputStream = new ObjectInputStream(serverSocket.getInputStream());
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(serverSocket.getOutputStream());
 
             // Handle player registration
             Player player = registerPlayer(objectInputStream, objectOutputStream);
@@ -35,7 +35,7 @@ public class ClientHandler implements Runnable {
 
             objectOutputStream.close();
             objectInputStream.close();
-            clientSocket.close();
+            serverSocket.close();
             clients.remove(this);
 
         } catch (IOException | ClassNotFoundException e) {
