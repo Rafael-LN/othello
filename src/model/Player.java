@@ -8,16 +8,17 @@ public class Player implements Serializable {
     private String nationality;
     private int age;
     private String photoUrl;
-    private int wins;
-    private int losses;
+    private int wins = 0;
+    private int losses = 0;
     private long timeSpent; // Time spent in milliseconds
 
-    public Player(String nickname, String password, String nationality, int age, String photoUrl) {
+    public Player(String nickname, String password, String nationality, int age, String photoUrl, long timeSpent) {
         this.nickname = nickname;
         this.password = password;
         this.nationality = nationality;
         this.age = age;
         this.photoUrl = photoUrl;
+        this.timeSpent = timeSpent;
     }
 
     // Getters and setters
@@ -87,7 +88,7 @@ public class Player implements Serializable {
 
     @Override
     public String toString() {
-        return "Player{" +
+        return "Player {" +
                 "nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
                 ", nationality='" + nationality + '\'' +
