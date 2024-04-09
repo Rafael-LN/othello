@@ -2,6 +2,7 @@ package src.io;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import src.model.Player;
 
@@ -24,9 +25,17 @@ public class PlayerXmlHandler {
      * Writes player information to an XML file.
      *
      * @param player The player object containing the player information to be written to the XML file.
+     * @return false if the player exits otherwise return true and register the player
      */
-    public void writePlayerToXml(Player player) {
+    public boolean registerPlayer(Player player) {
         try {
+
+            // Check if the player already exists in the database
+            if (playerExists(player.getNickname())) {
+                System.out.println("Player with nickname " + player.getNickname() + " already exists.");
+                return false;
+            }
+
             // Create a new XML document
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
@@ -58,6 +67,7 @@ public class PlayerXmlHandler {
             // Rethrow wrapped exception
             throw new RuntimeException("Error writing players to XML", e);
         }
+        return true;
     }
 
 
@@ -101,6 +111,51 @@ public class PlayerXmlHandler {
     }
 
     /**
+     * Checks if a player with the given nickname already exists in the database.
+     *
+     * @param nickname The nickname of the player to check.
+     * @return true if the player already exists, false otherwise.
+     */
+    private boolean playerExists(String nickname) {
+        try {
+            Document document = getXmlDocument();
+
+            NodeList playerList = document.getElementsByTagName("player");
+            for (int i = 0; i < playerList.getLength(); i++) {
+                Element playerElement = (Element) playerList.item(i);
+                String existingNickname = getPlayerNickname(playerElement);
+                if (existingNickname.equals(nickname)) {
+                    return true;
+                }
+            }
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private String getPlayerNickname(Element playerElement) {
+        Element nicknameElement = (Element) playerElement.getElementsByTagName("nickname").item(0);
+        return nicknameElement.getTextContent();
+    }
+
+    /**
+     * Reads the XML document containing player information.
+     *
+     * @return The XML document.
+     * @throws ParserConfigurationException If a DocumentBuilder cannot be created.
+     * @throws SAXException                 If any parse errors occur.
+     * @throws IOException                  If an I/O error occurs.
+     */
+    private Document getXmlDocument() throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(XML_FILE_PATH);
+        return document;
+    }
+
+
+    /**
      * TODO Reads player information from an XML file.
      *
      * @return The player object containing the player information read from the XML file.
@@ -108,9 +163,7 @@ public class PlayerXmlHandler {
     public Player readPlayerFromXml() {
         try {
             // Create a new XML document
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            Document document = builder.parse(XML_FILE_PATH);
+            Document document = getXmlDocument();
 
             // Get the root element of the XML document
             Element rootElement = document.getDocumentElement();
