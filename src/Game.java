@@ -256,4 +256,23 @@ public class Game {
     public int[][] getBoard() {
         return board; // retorna o estado atual do tabuleiro
     }
+
+    /**
+     * Verifica se ambos os jogadores não têm mais movimentos válidos.
+     * Se nenhum dos jogadores puder fazer uma jogada válida, o jogo termina.
+     *
+     * @return true se nenhum dos jogadores puder fazer uma jogada válida, false caso contrário.
+     */
+    public boolean isGameOver() {
+        // Verifica se pelo menos um dos jogadores pode fazer uma jogada válida
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (isValidMove(i, j)) {
+                    return false; // Se uma jogada válida for encontrada, o jogo ainda não acabou
+                }
+            }
+        }
+        return true; // Se nenhum dos jogadores puder fazer uma jogada válida, o jogo está encerrado
+    }
+
 }

@@ -42,12 +42,7 @@ public class Main {
         });
     }
 
-    /**
-     * Atualiza o estado gráfico do tabuleiro com base no estado atual do jogo.
-     *
-     * @param tabuleiro O JPanelTabuleiro que representa o tabuleiro gráfico.
-     * @param game O objeto Game que contém o estado atual do jogo.
-     */
+
     private static void updateTabuleiro(JPanelTabuleiro tabuleiro, Game game) {
         int[][] board = game.getBoard(); // obtém o estado atual do tabuleiro do jogo
 
@@ -60,6 +55,21 @@ public class Main {
                 } else if (board[i][j] == Game.WHITE) {
                     tabuleiro.setCelula(i, j, CelulaEstado.BRANCA); // define a célula como branca no JPanelTabuleiro
                 }
+            }
+        }
+
+        // Verifica se o jogo acabou
+        if (game.isGameOver()) {
+            // Obtém o vencedor do jogo
+            int winner = game.getWinner();
+
+            // Exibe a mensagem adequada com base no vencedor
+            if (winner == Game.BLACK) {
+                JOptionPane.showMessageDialog(null, "O jogador preto venceu!", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+            } else if (winner == Game.WHITE) {
+                JOptionPane.showMessageDialog(null, "O jogador branco venceu!", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "O jogo terminou em empate!", "Resultado", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
