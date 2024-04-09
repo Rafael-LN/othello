@@ -2,6 +2,7 @@ package src.io;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 import src.model.Player;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -12,6 +13,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,4 +105,37 @@ public class PlayerXmlHandler {
      *
      * @return The player object containing the player information read from the XML file.
      */
+    public Player readPlayerFromXml() {
+        try {
+            // Create a new XML document
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            Document document = builder.parse(XML_FILE_PATH);
+
+            // Get the root element of the XML document
+            Element rootElement = document.getDocumentElement();
+
+            // Get the player information from the root element
+            return getPlayerFromRootElement(document, rootElement);
+
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            // Log the exception
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error reading players from XML", e);
+            // Rethrow wrapped exception
+            throw new RuntimeException("Error reading players from XML", e);
+        }
+    }
+
+    private Player getPlayerFromRootElement(Document document, Element rootElement) {
+        // Get the player information from the root element
+        String nickname = rootElement.getElementsByTagName("nickname").item(0).getTextContent();
+        String password = rootElement.getElementsByTagName("password").item(0).getTextContent();
+        String nationality = rootElement.getElementsByTagName("nationality").item(0).getTextContent();
+        int age = Integer.parseInt(rootElement.getElementsByTagName("age").item(0).getTextContent());
+        String photoUrl = rootElement.getElementsByTagName("photoUrl").item(0).getTextContent();
+        int wins = Integer.parseInt(rootElement.getElementsByTagName("wins").item(0).getTextContent());
+        int losses = Integer.parseInt(rootElement.getElementsByTagName("losses").item(0).getTextContent());
+        int timeSpent = Integer.parseInt(rootElement.getElementsByTagName("timeSpent").item(0).getTextContent());
+        return new Player(nickname, password, nationality, age, photoUrl, wins, losses, timeSpent);
+    }
 }
