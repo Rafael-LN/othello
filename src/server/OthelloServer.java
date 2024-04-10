@@ -1,5 +1,7 @@
 package src.server;
 
+import src.model.Client;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,7 +10,7 @@ import java.util.List;
 
 public class OthelloServer {
     private static final int PORT = 8080;
-    private static List<ServerHandler> clients;
+    private static List<Client> clients;
 
     public static void main(String[] args) {
 
