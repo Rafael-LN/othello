@@ -8,6 +8,8 @@ import java.io.ObjectInputStream;
  */
 public class ClientHandler extends Thread {
     private ObjectInputStream objectInputStream;
+    private boolean isPlayerRegistered = false;
+    private boolean isPlayerLogged = false;
 
     /**
      * Constructor to initialize the client handler with the client socket.
@@ -27,6 +29,7 @@ public class ClientHandler extends Thread {
 
             Object response = objectInputStream.readObject();
 
+            System.out.println(response);
 
 
         } catch (IOException e) {
@@ -36,4 +39,12 @@ public class ClientHandler extends Thread {
         }
     }
 
+
+    public boolean isPlayerRegistered() {
+        return isPlayerRegistered;
+    }
+
+    public boolean isPlayerLogged() {
+        return isPlayerLogged;
+    }
 }
