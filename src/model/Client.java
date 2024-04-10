@@ -3,6 +3,7 @@ package src.model;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Objects;
 
 public class Client {
     private String name;
@@ -51,4 +52,16 @@ public class Client {
         this.player = player;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return Objects.equals(getName(), client.getName()) && Objects.equals(getPlayer().getNickname(), client.getPlayer().getNickname());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getPlayer().getNickname());
+    }
 }
