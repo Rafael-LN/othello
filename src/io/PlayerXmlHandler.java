@@ -3,23 +3,26 @@ package src.io;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import src.model.Player;
+import src.model.XmlDocument;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PlayerXmlHandler {
     private final String XML_FILE_PATH = "players.xml";
+    private XmlDocument xmlDocument;
+
+    public PlayerXmlHandler() {
+        xmlDocument = new XmlDocument(XML_FILE_PATH);
+    }
 
     /**
      * Writes player information to an XML file.
@@ -28,45 +31,15 @@ public class PlayerXmlHandler {
      * @return false if the player exits otherwise return true and register the player
      */
     public boolean registerPlayer(Player player) {
-        try {
-
-            // Check if the player already exists in the database
-            if (playerExists(player.getNickname())) {
-                System.out.println("Player with nickname " + player.getNickname() + " already exists.");
-                return false;
-            }
-
-            // Create a new XML document
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            Document document = builder.newDocument();
-
-            // Create the root element for player
-            Element rootElement = document.createElement("player");
-            document.appendChild(rootElement);
-
-            // Add player information to the root element
-            addPlayerToRootElement(document, player, rootElement);
-
-            // Transform the XML document
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(document);
-
-            // Write to XML file
-            StreamResult result = new StreamResult(XML_FILE_PATH);
-            transformer.transform(source, result);
-
-            // Output to console for testing
-            result = new StreamResult(System.out);
-            transformer.transform(source, result);
-
-        } catch (ParserConfigurationException | TransformerException e) {
-            // Log the exception
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error writing players to XML", e);
-            // Rethrow wrapped exception
-            throw new RuntimeException("Error writing players to XML", e);
+        // Check if the player already exists in the database
+        if (playerExists(player.getNickname())) {
+            System.out.println("Player with nickname " + player.getNickname() + " already exists.");
+            return false;
         }
+
+        // Add player information to the root element
+        addPlayerToRootElement(player);
+
         return true;
     }
 
@@ -74,32 +47,30 @@ public class PlayerXmlHandler {
     /**
      * Adds player information to the root element of the XML document.
      *
-     * @param document    The XML document to which the player information will be added.
-     * @param player      The player object containing the player information.
-     * @param rootElement The root element of the XML document.
+     * @param player The player object containing the player information.
      */
-    private void addPlayerToRootElement(Document document, Player player, Element rootElement) {
+    private void addPlayerToRootElement(Player player) {
         // Add player attributes to the root element
-        addPlayerInfoToRootElement(document, "nickname", player.getNickname(), rootElement);
-        addPlayerInfoToRootElement(document, "password", player.getPassword(), rootElement);
-        addPlayerInfoToRootElement(document, "nationality", player.getNationality(), rootElement);
-        addPlayerInfoToRootElement(document, "age", String.valueOf(player.getAge()), rootElement);
-        addPlayerInfoToRootElement(document, "photoUrl", player.getPhotoUrl(), rootElement);
-        addPlayerInfoToRootElement(document, "wins", String.valueOf(player.getWins()), rootElement);
-        addPlayerInfoToRootElement(document, "losses", String.valueOf(player.getLosses()), rootElement);
-        addPlayerInfoToRootElement(document, "timeSpent", String.valueOf(player.getTimeSpent()), rootElement);
+        addPlayerInfoToRootElement("nickname", player.getNickname());
+        addPlayerInfoToRootElement("password", player.getPassword());
+        addPlayerInfoToRootElement("nationality", player.getNationality());
+        addPlayerInfoToRootElement("age", String.valueOf(player.getAge()));
+        addPlayerInfoToRootElement("photoUrl", player.getPhotoUrl());
+        addPlayerInfoToRootElement("wins", String.valueOf(player.getWins()));
+        addPlayerInfoToRootElement("losses", String.valueOf(player.getLosses()));
+        addPlayerInfoToRootElement("timeSpent", String.valueOf(player.getTimeSpent()));
     }
 
 
     /**
      * Adds player information as an attribute to the root element of the XML document.
      *
-     * @param document    The XML document to which the player information will be added.
-     * @param infoName    The name of the player information attribute to be added (e.g., "password").
-     * @param infoValue   The value of the player information attribute to be added.
-     * @param rootElement The root element of the XML document.
+     * @param infoName  The name of the player information attribute to be added (e.g., "password").
+     * @param infoValue The value of the player information attribute to be added.
      */
-    private void addPlayerInfoToRootElement(Document document, String infoName, String infoValue, Element rootElement) {
+    private void addPlayerInfoToRootElement(String infoName, String infoValue) {
+        Document document = xmlDocument.getDocument();
+
         // Create a new element for the player information attribute
         Element infoElement = document.createElement(infoName);
 
@@ -107,7 +78,7 @@ public class PlayerXmlHandler {
         infoElement.appendChild(document.createTextNode(infoValue));
 
         // Append the player information attribute element to the root element of the XML document
-        rootElement.appendChild(infoElement);
+        xmlDocument.getRootElement().appendChild(infoElement);
     }
 
     /**
@@ -117,19 +88,13 @@ public class PlayerXmlHandler {
      * @return true if the player already exists, false otherwise.
      */
     private boolean playerExists(String nickname) {
-        try {
-            Document document = getXmlDocument();
-
-            NodeList playerList = document.getElementsByTagName("player");
-            for (int i = 0; i < playerList.getLength(); i++) {
-                Element playerElement = (Element) playerList.item(i);
-                String existingNickname = getPlayerNickname(playerElement);
-                if (existingNickname.equals(nickname)) {
-                    return true;
-                }
+        NodeList playerList = xmlDocument.getElementsByTagName("player");
+        for (int i = 0; i < playerList.getLength(); i++) {
+            Element playerElement = (Element) playerList.item(i);
+            String existingNickname = getPlayerNickname(playerElement);
+            if (existingNickname.equals(nickname)) {
+                return true;
             }
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
         }
         return false;
     }
@@ -139,44 +104,22 @@ public class PlayerXmlHandler {
         return nicknameElement.getTextContent();
     }
 
-    /**
-     * Reads the XML document containing player information.
-     *
-     * @return The XML document.
-     * @throws ParserConfigurationException If a DocumentBuilder cannot be created.
-     * @throws SAXException                 If any parse errors occur.
-     * @throws IOException                  If an I/O error occurs.
-     */
-    private Document getXmlDocument() throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(XML_FILE_PATH);
-        return document;
-    }
-
 
     /**
-     * TODO Reads player information from an XML file.
+     * Reads player information from an XML file.
      *
      * @return The player object containing the player information read from the XML file.
      */
     public Player readPlayerFromXml() {
-        try {
-            // Create a new XML document
-            Document document = getXmlDocument();
+        // Create a new XML document
+        Document document = xmlDocument.getDocument();
 
-            // Get the root element of the XML document
-            Element rootElement = document.getDocumentElement();
+        // Get the root element of the XML document
+        Element rootElement = document.getDocumentElement();
 
-            // Get the player information from the root element
-            return getPlayerFromRootElement(document, rootElement);
+        // Get the player information from the root element
+        return getPlayerFromRootElement(document, rootElement);
 
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            // Log the exception
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error reading players from XML", e);
-            // Rethrow wrapped exception
-            throw new RuntimeException("Error reading players from XML", e);
-        }
     }
 
     private Player getPlayerFromRootElement(Document document, Element rootElement) {
@@ -189,10 +132,41 @@ public class PlayerXmlHandler {
         int wins = Integer.parseInt(rootElement.getElementsByTagName("wins").item(0).getTextContent());
         int losses = Integer.parseInt(rootElement.getElementsByTagName("losses").item(0).getTextContent());
         int timeSpent = Integer.parseInt(rootElement.getElementsByTagName("timeSpent").item(0).getTextContent());
+
         Player player = new Player(nickname, password, nationality, age, photoUrl);
         player.setWins(wins);
         player.setLosses(losses);
         player.setTimeSpent(timeSpent);
+
         return player;
     }
+
+    public int getPlayersCount() throws XPathExpressionException {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+        XPathExpression expr = xpath.compile("count(/player)");
+        Double result = (Double) expr.evaluate(xmlDocument, XPathConstants.NUMBER);
+        return result.intValue();
+    }
+
+    public List<Player> getPlayers() {
+        Document document = xmlDocument.getDocument();
+
+        List<Player> players = new ArrayList<>();
+        NodeList playerList = document.getElementsByTagName("player");
+        for (int i = 0; i < playerList.getLength(); i++) {
+            Element playerElement = (Element) playerList.item(i);
+            players.add(getPlayerFromRootElement(document, playerElement));
+        }
+        return players;
+    }
+
+
+    private void handleXmlException(Exception e) {
+        // Log the exception
+        Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error reading players from XML", e);
+        // Rethrow wrapped exception
+        throw new RuntimeException("Error reading players from XML", e);
+    }
+
 }
