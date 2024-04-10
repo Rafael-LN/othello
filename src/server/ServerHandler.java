@@ -1,6 +1,7 @@
 package src.server;
 
-import src.io.PlayerXmlHandler;
+import src.io.PlayerDatabase;
+import src.model.Client;
 import src.model.Player;
 
 import java.io.IOException;
@@ -9,57 +10,79 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 
-public class ServerHandler implements Runnable {
-    private Socket serverSocket;
-    private List<ServerHandler> clients;
-    private PlayerXmlHandler playerXmlHandler;
+public class ServerHandler extends Thread {
+    private Socket connection;
+    private List<Client> clientsList;
+    private PlayerDatabase playerDatabase;
+    private List<Player> playersList;
+    private Player player;
 
-    public ServerHandler(Socket serverSocket, List<ServerHandler> clients) {
-        this.serverSocket = serverSocket;
-        this.clients = clients;
-        this.playerXmlHandler = new PlayerXmlHandler();
+    public ServerHandler(Socket connection, List<Client> clientsList) {
+        this.connection = connection;
+        this.clientsList = clientsList;
+        this.playerDatabase = new PlayerDatabase();
     }
 
     @Override
     public void run() {
+
+        ObjectInputStream inputStream = null;
+        ObjectOutputStream outputStream = null;
+
         try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(serverSocket.getInputStream());
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(serverSocket.getOutputStream());
+            System.out.println("Thread " + this.getId() + ": " + connection.getRemoteSocketAddress());
+
+            inputStream = new ObjectInputStream(connection.getInputStream());
+            outputStream = new ObjectOutputStream(connection.getOutputStream());
+
+            Client me = new Client();
+            me.setName("Cli-" + this.getId());
+            me.setSocket(this.connection);
+            me.setInputStream(inputStream);
+            me.setOutputStream(outputStream);
+
+            clientsList.add(me);
+
 
             // Handle player registration
-            Player player = registerPlayer(objectInputStream, objectOutputStream);
+            player = registerPlayer(inputStream, outputStream);
 
             // Handle lobby interactions
-            handleLobbyInteraction(player, objectInputStream, objectOutputStream);
+            handleLobbyInteraction(player, inputStream, outputStream);
 
 
-            objectOutputStream.close();
-            objectInputStream.close();
-            serverSocket.close();
-            clients.remove(this);
+            outputStream.close();
+            inputStream.close();
+            connection.close();
 
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("Exception encountered " + e.getMessage());
         }
     }
 
     private Player registerPlayer(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) throws IOException, ClassNotFoundException {
-        // Prompt player to provide information for registration
-        objectOutputStream.writeObject("Please provide player information: nickname, password, nationality, age, and photo URL");
-        objectOutputStream.flush();
+        boolean success = false;
+        Player player = null;
+        do {
+            // Receive player information from client
+            if (objectInputStream.readObject() != null) {
 
-        // Receive player information from client
-        Player player = (Player) objectInputStream.readObject();
+                player = (Player) objectInputStream.readObject();
 
-        // Simulate registration process (e.g., store player data in database)
-        // Example: PlayerDatabase.register(player);
-        if (playerXmlHandler.registerPlayer(player)){
-            // Notify client that registration is successful
-            objectOutputStream.writeObject("Registration successful. Welcome, " + player.getNickname() + "!");
-            objectOutputStream.flush();
+                System.out.println(player.toString());
 
-            System.out.println("Received registration: " + player);
-        }
+
+                success = playerDatabase.registerPlayer(player, objectOutputStream);
+                if (success) {
+                    // Notify client that registration is successful
+                    objectOutputStream.writeObject("Registration successful. Welcome, " + player.getNickname() + "!");
+
+                    objectOutputStream.flush();
+
+                    System.out.println("Received registration: " + player);
+                }
+            }
+        } while (!success);
 
 
         return player;
@@ -69,5 +92,19 @@ public class ServerHandler implements Runnable {
     private void handleLobbyInteraction(Player player, ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) throws IOException {
         // Implement logic to handle lobby interactions
         // Example: player joining lobby, leaving lobby, etc.
+    }
+
+    public void broadcastLobby(Client sender) {
+        String lobby = "Lobby:\n";
+        for (Client client : clientsList) {
+            if (!client.equals(sender)) {
+                lobby += client.getPlayer() + "\n";
+            }
+        }
+        //sender.sendMessage(lobby);
+    }
+
+    public void removeClient(Client client) {
+        clientsList.remove(client);
     }
 }
