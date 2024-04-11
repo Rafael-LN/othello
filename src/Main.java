@@ -1,14 +1,19 @@
 package src;
 
+import src.client.OthelloClient;
+
 import src.tabuleiroGUI.CelulaEstado;
 import src.tabuleiroGUI.JPanelTabuleiro;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Main {
 
     public static void main(String[] args) {
-
         Game game = new Game(); // cria instância do jogo
 
         // cria a interface gráfica do tabuleiro
@@ -20,7 +25,7 @@ public class Main {
      *
      * @param game O objeto Game que contém a lógica do jogo.
      */
-    private static void createAndShowGUI(Game game) {
+    /*private static void createAndShowGUI(Game game) {
         JFrame frame = new JFrame("Othello"); // cria um novo JFrame com o título "Othello"
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // define o comportamento padrão de exit
 
@@ -40,6 +45,93 @@ public class Main {
             // atualiza o estado do tabuleiro gráfico com base no estado do jogo
             updateTabuleiro(tabuleiro, game);
         });
+    }*/
+
+    private static void createAndShowGUI(Game game) {
+        JFrame frame = new JFrame("Othello");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        int boardWidth = 500;
+        int boardHeight = 500;
+        int cellSize = 10;
+        int margin = 20;
+
+        int windowWidth = boardWidth + 2 * margin;
+        int windowHeight = boardHeight + 2 * margin + 50; // Added 50 pixels for timer and top margin
+
+        frame.setSize(windowWidth, windowHeight);
+
+        JPanel container = new JPanel();
+        container.setLayout(new BorderLayout());
+        frame.add(container);
+
+        JPanel westMargin = new JPanel();
+        JPanel eastMargin = new JPanel();
+        JPanel northMargin = new JPanel();
+        JPanel southMargin = new JPanel();
+
+        westMargin.setBackground(new Color(62, 76, 62));
+        eastMargin.setBackground(new Color(62, 76, 62));
+        northMargin.setBackground(new Color(62, 76, 62));
+        southMargin.setBackground(new Color(62, 76, 62));
+
+        westMargin.setPreferredSize(new Dimension(margin, windowHeight));
+        eastMargin.setPreferredSize(new Dimension(margin, windowHeight));
+        northMargin.setPreferredSize(new Dimension(windowWidth, margin));
+        southMargin.setPreferredSize(new Dimension(windowWidth, margin));
+
+        container.add(westMargin, BorderLayout.WEST);
+        container.add(eastMargin, BorderLayout.EAST);
+        container.add(northMargin, BorderLayout.NORTH);
+        container.add(southMargin, BorderLayout.SOUTH);
+
+        JPanelTabuleiro tabuleiro = new JPanelTabuleiro(Game.SIZE, Game.SIZE, cellSize);
+        tabuleiro.setPreferredSize(new Dimension(boardWidth, boardHeight));
+        container.add(tabuleiro, BorderLayout.CENTER);
+
+        JPanel playersPanel = new JPanel(new GridLayout(1, 0));
+        playersPanel.setBackground(new Color(62, 76, 62));
+        Border marginplayer = BorderFactory.createEmptyBorder(20, 20, 20, 20);
+        playersPanel.setBorder(marginplayer);
+
+        JPanel player1Panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        player1Panel.setBackground(new Color(62, 76, 62));
+        JLabel jogador1 = new JLabel("Player 1: ");
+        jogador1.setForeground(Color.WHITE);
+        player1Panel.add(jogador1);
+        playersPanel.add(player1Panel);
+
+        JPanel player2Panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        player2Panel.setBackground(new Color(62, 76, 62));
+        JLabel jogador2 = new JLabel("Player 2: ");
+        jogador2.setForeground(Color.WHITE);
+        player2Panel.add(jogador2);
+        playersPanel.add(player2Panel);
+
+        JPanel timerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        timerPanel.setBackground(new Color(62, 76, 62));
+        JLabel timer = new JLabel("00:00:00");
+        timer.setForeground(Color.WHITE);
+        timerPanel.add(timer);
+        playersPanel.add(timerPanel);
+
+        // Create a timer that updates the timer label every second
+        long startTime = System.currentTimeMillis();
+        Timer timerThread = new Timer(1000, e -> {
+            // Update the timer label
+            long time = (System.currentTimeMillis() - startTime) / 1000;
+            timer.setText(String.format("%02d:%02d:%02d", time / 3600, (time % 3600) / 60, time % 60));
+        });
+        timerThread.start();
+
+        container.add(playersPanel, BorderLayout.NORTH);
+
+        frame.setVisible(true);
+
+        tabuleiro.setClickHandler((linha, coluna, estado) -> {
+            game.makeMove(linha, coluna);
+            updateTabuleiro(tabuleiro, game);
+        });
     }
 
 
@@ -57,20 +149,22 @@ public class Main {
                 }
             }
         }
-
-        // Verifica se o jogo acabou
         if (game.isGameOver()) {
-            // Obtém o vencedor do jogo
-            int winner = game.getWinner();
+            endGame(game);
+        }
+    }
 
-            // Exibe a mensagem adequada com base no vencedor
-            if (winner == Game.BLACK) {
-                JOptionPane.showMessageDialog(null, "O jogador preto venceu!", "Resultado", JOptionPane.INFORMATION_MESSAGE);
-            } else if (winner == Game.WHITE) {
-                JOptionPane.showMessageDialog(null, "O jogador branco venceu!", "Resultado", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "O jogo terminou em empate!", "Resultado", JOptionPane.INFORMATION_MESSAGE);
-            }
+    private static void endGame(Game game) {
+        // Obtém o vencedor do jogo
+        int winner = game.getWinner();
+
+        // Exibe a mensagem adequada com base no vencedor
+        if (winner == Game.BLACK) {
+            JOptionPane.showMessageDialog(null, "O jogador preto venceu!", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+        } else if (winner == Game.WHITE) {
+            JOptionPane.showMessageDialog(null, "O jogador branco venceu!", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "O jogo terminou em empate!", "Resultado", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

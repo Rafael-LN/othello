@@ -24,7 +24,7 @@ public class JButtonCelula extends JButton {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		g.setColor(new Color(47, 69, 56)); // Definir a cor 2F4538
+		g.setColor(new Color(68, 80, 68)); // Definir a cor 2F4538
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		// Desenhar o texto na célula

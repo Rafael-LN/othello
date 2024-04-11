@@ -7,6 +7,8 @@ public class JPanelTabuleiro extends JPanel {
 
 	public int nColunas;
 	public int nLinhas;
+
+	public int cellSize;
 	
 	private JButtonCelula [][] tabuleiro;
 	private ClickHandler clickHandler;
@@ -15,13 +17,14 @@ public class JPanelTabuleiro extends JPanel {
 	
 	
 	public JPanelTabuleiro() {
-		this(8,8);
+		this(8,8,10);
 	}		
 	
-	public JPanelTabuleiro(int nLinhas, int nColunas) {
+	public JPanelTabuleiro(int nLinhas, int nColunas, int cellSize) {
 		super();
 		this.nLinhas = nLinhas;
 		this.nColunas = nColunas;
+		this.cellSize = cellSize;
 		
 		tabuleiro = new JButtonCelula[nLinhas][nColunas];
 		
@@ -37,7 +40,7 @@ public class JPanelTabuleiro extends JPanel {
 			}
 		}
 	}
-	
+
 	public void setReadOnly(boolean ro) {
 		readOnly = ro;
 		for(int i=0; i<nLinhas; i++) {
