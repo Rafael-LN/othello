@@ -37,9 +37,12 @@ public class OthelloClient {
             clientHandler.start();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            Player player = null;
 
-            // Read player information from user input
-            Player player = registerPlayer(reader);
+            while (!clientHandler.isPlayerRegistered()) {
+                // Read player information from user input
+                player = registerPlayer(reader);
+            }
 
             // Send player information to the server for registration
             out.writeObject(player);

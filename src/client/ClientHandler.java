@@ -13,7 +13,6 @@ public class ClientHandler extends Thread {
 
     /**
      * Constructor to initialize the client handler with the client socket.
-     *
      */
     public ClientHandler(ObjectInputStream objectInputStream) {
         this.objectInputStream = objectInputStream;
@@ -28,8 +27,15 @@ public class ClientHandler extends Thread {
         try {
 
             Object response = objectInputStream.readObject();
+            System.out.println("response -> " + response);
 
-            System.out.println(response);
+            if (response instanceof String) {
+                if ( ((String) response).contains("already exists") ) {
+                    isPlayerRegistered = false;
+                }else if (((String) response).contains("Registration successful")){
+                    isPlayerRegistered = true;
+                }
+            }
 
 
         } catch (IOException e) {
