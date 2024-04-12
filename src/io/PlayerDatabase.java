@@ -22,7 +22,8 @@ public class PlayerDatabase {
         // Check if the player already exists in the list
         if (existingPlayers.stream().anyMatch(p -> p.getNickname().equals(player.getNickname()))) {
             try {
-                outputStream.writeUTF("Player with nickname " + player.getNickname() + " already exists.");
+                outputStream.writeObject("Player with nickname " + player.getNickname() + " already exists.");
+                System.out.println("Player with nickname " + player.getNickname() + " already exists.");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -47,6 +48,7 @@ public class PlayerDatabase {
                 try {
                     Player player = (Player) objectIn.readObject();
                     players.add(player);
+                    System.out.println(player.toString());
                 } catch (EOFException e) {
                     break; // Reached end of file
                 }
