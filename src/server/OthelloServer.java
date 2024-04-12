@@ -20,10 +20,13 @@ public class OthelloServer {
 
         try {
             serverSocket = new ServerSocket(PORT);
-            System.out.println("Server started. Listening on port " + PORT);
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected: " + clientSocket);
+
+            Socket clientSocket = null;
+            for (; ; ) {
+                System.out.println("Server started. Listening on port " + PORT);
+
+                clientSocket = serverSocket.accept();
+
                 Thread serverHandler = new ServerHandler(clientSocket, clients);
                 serverHandler.start();
             }
