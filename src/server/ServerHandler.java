@@ -23,7 +23,6 @@ public class ServerHandler extends Thread {
         this.playerDatabase = new PlayerDatabase();
     }
 
-    @Override
     public void run() {
 
         ObjectInputStream inputStream = null;
@@ -43,46 +42,55 @@ public class ServerHandler extends Thread {
 
             clientsList.add(me);
 
+            for (;;) {
 
-            // Handle player registration
-            player = registerPlayer(inputStream, outputStream);
+                player = registerPlayer(inputStream, outputStream);
+
+                System.out.println(me.getInputStream().readObject());
+
+            }            // Handle player registration
+
 
             // Handle lobby interactions
-            handleLobbyInteraction(player, inputStream, outputStream);
+            // handleLobbyInteraction(player, inputStream, outputStream);
 
 
-            outputStream.close();
-            inputStream.close();
-            connection.close();
 
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Exception encountered " + e.getMessage());
+
+        } catch (ClassNotFoundException | IOException e) {
+            System.err.println("Exception encountered " + e.getMessage() + " from " + e.getClass());
+        }finally {
+            try {
+                if (outputStream != null) outputStream.close();
+                if (inputStream != null) inputStream.close();
+                if (connection != null) connection.close();
+            } catch (IOException e) {
+                System.err.println("Exception encountered " + e.getMessage() + " from " + e.getClass());
+    }
         }
     }
 
     private Player registerPlayer(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) throws IOException, ClassNotFoundException {
-        boolean success = false;
-        Player player = null;
-        do {
-            // Receive player information from client
-            if (objectInputStream.readObject() != null) {
 
-                player = (Player) objectInputStream.readObject();
+        // Receive player information from client
 
-                System.out.println(player.toString());
+        System.out.println("hello");
+        Player player = (Player) objectInputStream.readObject();
+        System.out.println("hello2");
+
+        System.out.println(player);
+
+        System.out.println(player.toString());
 
 
-                success = playerDatabase.registerPlayer(player, objectOutputStream);
-                if (success) {
-                    // Notify client that registration is successful
-                    objectOutputStream.writeObject("Registration successful. Welcome, " + player.getNickname() + "!");
+        if (playerDatabase.registerPlayer(player, objectOutputStream)) {
+            // Notify client that registration is successful
+            objectOutputStream.writeObject("Registration successful. Welcome, " + player.getNickname() + "!");
 
-                    objectOutputStream.flush();
+            objectOutputStream.flush();
 
-                    System.out.println("Received registration: " + player);
-                }
-            }
-        } while (!success);
+            System.out.println("Received registration: " + player);
+        }
 
 
         return player;
