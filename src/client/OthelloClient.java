@@ -42,11 +42,13 @@ public class OthelloClient {
             while (!clientHandler.isPlayerRegistered()) {
                 // Read player information from user input
                 player = registerPlayer(reader);
+
+                // Send player information to the server for registration
+                out.writeObject(player);
+                out.flush();
             }
 
-            // Send player information to the server for registration
-            out.writeObject(player);
-            out.flush();
+
 
 
         } catch (IOException e) {
