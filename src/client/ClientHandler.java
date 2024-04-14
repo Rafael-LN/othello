@@ -8,8 +8,8 @@ import java.io.ObjectInputStream;
  */
 public class ClientHandler extends Thread {
     private ObjectInputStream objectInputStream;
-    private boolean isPlayerRegistered = false;
-    private boolean isPlayerLogged = false;
+    private String isPlayerRegistered = "";
+    private String isPlayerLogged = "";
 
     /**
      * Constructor to initialize the client handler with the client socket.
@@ -30,11 +30,8 @@ public class ClientHandler extends Thread {
             System.out.println("response -> " + response);
 
             if (response instanceof String) {
-                if ( ((String) response).contains("already exists") ) {
-                    isPlayerRegistered = false;
-                }else if (((String) response).contains("Registration successful")){
-                    isPlayerRegistered = true;
-                }
+                isPlayerRegistered = (String) response;
+                isPlayerLogged = (String) response;
             }
 
 
@@ -47,10 +44,10 @@ public class ClientHandler extends Thread {
 
 
     public boolean isPlayerRegistered() {
-        return isPlayerRegistered;
+        return isPlayerRegistered.contains("Registration successful");
     }
 
     public boolean isPlayerLogged() {
-        return isPlayerLogged;
+        return isPlayerLogged.contains("Login successful");
     }
 }
