@@ -74,9 +74,7 @@ public class ServerHandler extends Thread {
 
         // Receive player information from client
 
-        System.out.println("hello");
         Player player = (Player) objectInputStream.readObject();
-        System.out.println("hello2");
 
         System.out.println(player);
 
