@@ -3,11 +3,7 @@ package src.client;
 import src.gui.PlayerRegistration;
 import src.model.Player;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -40,6 +36,8 @@ public class OthelloClient {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             Player player = null;
 
+            PlayerRegistration registrationWindow = new PlayerRegistration(out); // Create the registration window once
+
             while (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
                 // Read player information from user input
 
@@ -49,14 +47,13 @@ public class OthelloClient {
                 out.writeObject(player);
                 out.flush();*/
 
-                if (!clientHandler.isPlayerRegistered()) {
+                /*if (!clientHandler.isPlayerRegistered()) {
                     new PlayerRegistration(out);
+                }*/
+                if (!clientHandler.isPlayerRegistered()) {
+                    registrationWindow.setVisible(true); // Show the registration window when needed
                 }
             }
-
-
-
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

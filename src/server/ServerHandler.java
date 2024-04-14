@@ -14,6 +14,7 @@ public class ServerHandler extends Thread {
     private Socket connection;
     private List<Client> clientsList;
     private PlayerDatabase playerDatabase;
+
     private List<Player> playersList;
     private Player player;
 
@@ -21,6 +22,7 @@ public class ServerHandler extends Thread {
         this.connection = connection;
         this.clientsList = clientsList;
         this.playerDatabase = new PlayerDatabase();
+
     }
 
     public void run() {
@@ -82,6 +84,7 @@ public class ServerHandler extends Thread {
 
 
         if (playerDatabase.registerPlayer(player, objectOutputStream)) {
+
             // Notify client that registration is successful
             objectOutputStream.writeObject("Registration successful. Welcome, " + player.getNickname() + "!");
 
