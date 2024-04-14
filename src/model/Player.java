@@ -22,6 +22,11 @@ public class Player implements Serializable {
         this.photoUrl = photoUrl;
     }
 
+    public Player(String nickname, String password){
+        this.nickname = nickname;
+        this.password = password;
+    }
+
     // Getters and setters
     public String getNickname() {
         return nickname;
