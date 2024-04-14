@@ -1,15 +1,11 @@
 package src;
 
-import src.client.OthelloClient;
-
 import src.tabuleiroGUI.CelulaEstado;
 import src.tabuleiroGUI.JPanelTabuleiro;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Main {
 

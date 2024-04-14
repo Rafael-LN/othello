@@ -1,5 +1,6 @@
 package src.client;
 
+import src.gui.PlayerRegistration;
 import src.model.Player;
 
 import java.io.BufferedReader;
@@ -39,13 +40,18 @@ public class OthelloClient {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             Player player = null;
 
-            while (!clientHandler.isPlayerRegistered()) {
+            while (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
                 // Read player information from user input
-                player = registerPlayer(reader);
+
+                /*player = clientHandler.isPlayerRegistered() ? registerPlayer(reader) : logPlayer(reader);
 
                 // Send player information to the server for registration
                 out.writeObject(player);
-                out.flush();
+                out.flush();*/
+
+                if (!clientHandler.isPlayerRegistered()) {
+                    new PlayerRegistration(out);
+                }
             }
 
 
@@ -63,6 +69,17 @@ public class OthelloClient {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private static Player logPlayer(BufferedReader reader) throws IOException {
+        System.out.println("Please login\n");
+        System.out.println("Nickname: ");
+        String nickname = reader.readLine();
+
+        System.out.println("Password: ");
+        String password = reader.readLine();
+
+        return new Player(nickname, password);
     }
 
     /**
