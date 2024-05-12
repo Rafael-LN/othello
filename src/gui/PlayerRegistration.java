@@ -1,6 +1,6 @@
-package src.gui;
+package gui;
 
-import src.model.Player;
+import model.Player;
 
 import javax.swing.*;
 import java.awt.*;

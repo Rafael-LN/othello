@@ -1,6 +1,6 @@
-package src.io;
+package io;
 
-import src.model.Player;
+import model.Player;
 
 import java.io.EOFException;
 import java.io.FileInputStream;

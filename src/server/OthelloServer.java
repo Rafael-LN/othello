@@ -1,6 +1,6 @@
-package src.server;
+package server;
 
-import src.model.Client;
+import model.Client;
 
 import java.io.IOException;
 import java.net.ServerSocket;

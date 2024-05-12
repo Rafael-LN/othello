@@ -1,5 +1,3 @@
-package src;
-
 /**
  * Objetivo do Jogo:
  * O objetivo do Othello é ter mais peças da sua cor (pretas ou brancas) no tabuleiro do que o seu oponente ao final do jogo.

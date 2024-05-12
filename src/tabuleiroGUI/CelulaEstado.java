@@ -1,4 +1,4 @@
-package src.tabuleiroGUI;
+package tabuleiroGUI;
 
 public class CelulaEstado {
 	public final static int LIVRE 	= 0;

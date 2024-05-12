@@ -1,4 +1,5 @@
-package src.tabuleiroGUI;
+package tabuleiroGUI;
+
 import javax.swing.JPanel;
 
 import java.awt.GridLayout;
@@ -10,7 +11,7 @@ public class JPanelTabuleiro extends JPanel {
 
 	public int cellSize;
 	
-	private JButtonCelula [][] tabuleiro;
+	private JButtonCelula[][] tabuleiro;
 	private ClickHandler clickHandler;
 	
 	public boolean readOnly = false;

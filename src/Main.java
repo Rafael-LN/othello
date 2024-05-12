@@ -1,7 +1,5 @@
-package src;
-
-import src.tabuleiroGUI.CelulaEstado;
-import src.tabuleiroGUI.JPanelTabuleiro;
+import tabuleiroGUI.CelulaEstado;
+import tabuleiroGUI.JPanelTabuleiro;
 
 import javax.swing.*;
 import javax.swing.border.Border;
