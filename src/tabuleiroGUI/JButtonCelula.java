@@ -1,4 +1,4 @@
-package src.tabuleiroGUI;
+package tabuleiroGUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,7 @@ public class JButtonCelula extends JButton {
 	int coluna;
 	int estado = CelulaEstado.LIVRE;
 	
-	private ClickHandler clickHandler;	
+	private ClickHandler clickHandler;
 	
 	public JButtonCelula(int linha, int coluna) {
 		super(CelulaEstado.decodeEstadoString(CelulaEstado.LIVRE));

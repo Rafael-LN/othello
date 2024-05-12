@@ -1,7 +1,7 @@
-package src.client;
+package client;
 
-import src.gui.PlayerRegistration;
-import src.model.Player;
+import gui.PlayerRegistration;
+import model.Player;
 
 import java.io.*;
 import java.net.Socket;

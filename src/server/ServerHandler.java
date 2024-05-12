@@ -1,8 +1,8 @@
-package src.server;
+package server;
 
-import src.io.PlayerDatabase;
-import src.model.Client;
-import src.model.Player;
+import io.PlayerDatabase;
+import model.Client;
+import model.Player;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
