@@ -2,7 +2,13 @@ package client;
 
 import gui.PlayerRegistration;
 import model.Player;
+import org.w3c.dom.Document;
+import utils.XMLBuilder;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.Socket;
 
@@ -41,21 +47,30 @@ public class OthelloClient {
             while (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
                 // Read player information from user input
 
-                /*player = clientHandler.isPlayerRegistered() ? registerPlayer(reader) : logPlayer(reader);
+                player = clientHandler.isPlayerRegistered() ? logPlayer(reader) : registerPlayer(reader);
 
+                Document playerXML = XMLBuilder.createPlayerRegistrationXML(player);
+
+                // Transforma o documento XML em uma string
+                String playerXMLString = transformDocumentToString(playerXML);
+
+                // Envie o XML para o servidor
+                out.writeObject(playerXMLString);
                 // Send player information to the server for registration
                 out.writeObject(player);
-                out.flush();*/
+                out.flush();
 
-                /*if (!clientHandler.isPlayerRegistered()) {
-                    new PlayerRegistration(out);
-                }*/
                 if (!clientHandler.isPlayerRegistered()) {
-                    registrationWindow.setVisible(true); // Show the registration window when needed
+                    new PlayerRegistration(out);
                 }
+                /*if (!clientHandler.isPlayerRegistered()) {
+                    registrationWindow.setVisible(true); // Show the registration window when needed
+                }*/
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         } finally {
             // Close connections
             try {
@@ -66,6 +81,15 @@ public class OthelloClient {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private static String transformDocumentToString(Document doc) throws Exception {
+        // Transforma o documento XML em uma string
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        StringWriter writer = new StringWriter();
+        transformer.transform(new DOMSource(doc), new StreamResult(writer));
+        return writer.getBuffer().toString();
     }
 
     private static Player logPlayer(BufferedReader reader) throws IOException {
