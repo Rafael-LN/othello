@@ -47,7 +47,7 @@ public class OthelloClient {
             while (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
                 // Read player information from user input
 
-                player = clientHandler.isPlayerRegistered() ? registerPlayer(reader) : logPlayer(reader);
+                player = clientHandler.isPlayerRegistered() ? logPlayer(reader) : registerPlayer(reader);
 
                 Document playerXML = XMLBuilder.createPlayerRegistrationXML(player);
 
