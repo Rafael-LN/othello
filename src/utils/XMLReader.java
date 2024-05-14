@@ -44,7 +44,7 @@ public class XMLReader {
 
     private static String getElementValue(Element parent, String tagName) {
         NodeList nodeList = parent.getElementsByTagName(tagName);
-        if (nodeList != null && nodeList.getLength() > 0) {
+        if (nodeList.getLength() > 0) {
             return nodeList.item(0).getTextContent();
         }
         return null;
