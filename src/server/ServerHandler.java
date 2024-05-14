@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.util.List;
 
 public class ServerHandler extends Thread {
-    public static final String PLAYER_XSD = "schemas/player.xsd";
+    public static final String PLAYER_XSD = "src/schemas/player.xsd";
     private Socket connection;
     private List<Client> clientsList;
     private PlayerDatabase playerDatabase;
