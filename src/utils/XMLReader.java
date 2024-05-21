@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
 
 public class XMLReader {
 
@@ -38,8 +39,8 @@ public class XMLReader {
         String password = getElementValue(root, "password");
         String nationality = getElementValue(root, "nationality");
         int age = Integer.parseInt(getElementValue(root, "age"));
-        String photoUrl = getElementValue(root, "photoUrl");
-        return new Player(nickname, password, nationality, age, photoUrl);
+        byte[] photo = Base64.getDecoder().decode(getElementValue(root, "photo"));
+        return new Player(nickname, password, nationality, age, photo);
     }
 
     private static String getElementValue(Element parent, String tagName) {

@@ -19,7 +19,6 @@ public class ServerHandler extends Thread {
     private PlayerDatabase playerDatabase;
 
     private List<Player> playersList;
-    private Player player;
 
     public ServerHandler(Socket connection, List<Client> clientsList) {
         this.connection = connection;
@@ -46,21 +45,16 @@ public class ServerHandler extends Thread {
             me.setOutputStream(outputStream);
 
             clientsList.add(me);
+            Player player;
 
             for (;;) {
 
                 player = registerPlayer(inputStream, outputStream);
 
-                System.out.println(me.getInputStream().readObject());
-
             }            // Handle player registration
 
-
-            // Handle lobby interactions
+            // TODO Handle lobby interactions
             // handleLobbyInteraction(player, inputStream, outputStream);
-
-
-
 
         } catch (ClassNotFoundException | IOException e) {
             System.err.println("Exception encountered " + e.getMessage() + " from " + e.getClass());
@@ -88,14 +82,12 @@ public class ServerHandler extends Thread {
             if (XMLReader.validateXML(xmlDoc, PLAYER_XSD)) {
                 // Extract Player object from XML
                 player = XMLReader.extractPlayerFromXML(xmlDoc);
-                System.out.println(player);
 
                 // Register player in the database
                 if (playerDatabase.registerPlayer(player, objectOutputStream)) {
                     // Notify client that registration is successful
                     objectOutputStream.writeObject("Registration successful. Welcome, " + player.getNickname() + "!");
                     objectOutputStream.flush();
-                    System.out.println("Received registration: " + player);
                 }
             } else {
                 // Notify client that the XML is invalid

@@ -2,13 +2,7 @@ package client;
 
 import gui.PlayerRegistration;
 import model.Player;
-import org.w3c.dom.Document;
-import utils.XMLBuilder;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.Socket;
 
@@ -43,29 +37,13 @@ public class OthelloClient {
             Player player = null;
 
             PlayerRegistration registrationWindow = new PlayerRegistration(out); // Create the registration window once
+            registrationWindow.setVisible(false);
 
             while (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
-                // Read player information from user input
-
-                player = clientHandler.isPlayerRegistered() ? logPlayer(reader) : registerPlayer(reader);
-
-                Document playerXML = XMLBuilder.createPlayerRegistrationXML(player);
-
-                // Transforma o documento XML em uma string
-                String playerXMLString = transformDocumentToString(playerXML);
-
-                // Envie o XML para o servidor
-                out.writeObject(playerXMLString);
-                // Send player information to the server for registration
-                out.writeObject(player);
-                out.flush();
 
                 if (!clientHandler.isPlayerRegistered()) {
-                    new PlayerRegistration(out);
+                    registrationWindow.setVisible(true);
                 }
-                /*if (!clientHandler.isPlayerRegistered()) {
-                    registrationWindow.setVisible(true); // Show the registration window when needed
-                }*/
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,14 +61,7 @@ public class OthelloClient {
         }
     }
 
-    private static String transformDocumentToString(Document doc) throws Exception {
-        // Transforma o documento XML em uma string
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        StringWriter writer = new StringWriter();
-        transformer.transform(new DOMSource(doc), new StreamResult(writer));
-        return writer.getBuffer().toString();
-    }
+
 
     private static Player logPlayer(BufferedReader reader) throws IOException {
         System.out.println("Please login\n");
@@ -109,7 +80,7 @@ public class OthelloClient {
      * @return The player object containing the registration information.
      * @throws IOException If an I/O error occurs while reading user input.
      */
-    private static Player registerPlayer(BufferedReader reader) throws IOException {
+    /*private static Player registerPlayer(BufferedReader reader) throws IOException {
         // Solicit player registration information from the console
         System.out.println("Please provide player information: nickname, password, nationality, age, and photo URL\n");
         System.out.println("Nickname: ");
@@ -128,5 +99,5 @@ public class OthelloClient {
         String photoUrl = reader.readLine();
 
         return new Player(nickname, password, nationality, age, photoUrl);
-    }
+    }*/
 }

@@ -24,7 +24,7 @@ public class XMLBuilder {
         rootElement.appendChild(createElement(doc, "password", player.getPassword()));
         rootElement.appendChild(createElement(doc, "nationality", player.getNationality()));
         rootElement.appendChild(createElement(doc, "age", String.valueOf(player.getAge())));
-        rootElement.appendChild(createElement(doc, "photoUrl", player.getPhotoUrl()));
+        rootElement.appendChild(createElement(doc, "photo", player.getBase64Photo()));
 
         return doc;
     }
