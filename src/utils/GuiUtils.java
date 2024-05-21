@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class GuiUtils {
+
     public static JButton createButton(String text, Color backgroundColor, ActionListener actionListener) {
         JButton button = new JButton(text);
         button.setPreferredSize(new Dimension(100, 40));
@@ -15,5 +16,27 @@ public class GuiUtils {
         button.setFocusPainted(false); // Disable the focus painting
         button.addActionListener(actionListener);
         return button;
+    }
+
+    public static JLabel createLabel(String text, int alignment) {
+        JLabel label = new JLabel(text, alignment);
+        return label;
+    }
+
+    public static JTextField createTextField(int columns) {
+        return new JTextField(columns);
+    }
+
+    public static JPasswordField createPasswordField(int columns) {
+        return new JPasswordField(columns);
+    }
+
+    public static GridBagConstraints createGridBagConstraints(int gridx, int gridy, int anchor) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = gridx;
+        gbc.gridy = gridy;
+        gbc.anchor = anchor;
+        gbc.insets = new Insets(5, 5, 5, 5); // Spacing between elements
+        return gbc;
     }
 }
