@@ -1,3 +1,5 @@
+package game;
+
 import tabuleiroGUI.CelulaEstado;
 import tabuleiroGUI.JPanelTabuleiro;
 
@@ -17,13 +19,13 @@ public class Main {
     /**
      * Cria e exibe a interface gráfica do jogo
      *
-     * @param game O objeto Game que contém a lógica do jogo.
+     * @param game O objeto game.Game que contém a lógica do jogo.
      */
-    /*private static void createAndShowGUI(Game game) {
+    /*private static void createAndShowGUI(game.Game game) {
         JFrame frame = new JFrame("Othello"); // cria um novo JFrame com o título "Othello"
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // define o comportamento padrão de exit
 
-        JPanelTabuleiro tabuleiro = new JPanelTabuleiro(Game.SIZE, Game.SIZE); // cria um novo JPanelTabuleiro com as dimensões especificadas
+        JPanelTabuleiro tabuleiro = new JPanelTabuleiro(game.Game.SIZE, game.Game.SIZE); // cria um novo JPanelTabuleiro com as dimensões especificadas
         frame.add(tabuleiro); // adiciona o painel do tabuleiro ao frame
 
         frame.setSize(500,500); // define o tamanho inicial do frame
@@ -41,7 +43,7 @@ public class Main {
         });
     }*/
 
-    private static void createAndShowGUI(Game game) {
+    public static void createAndShowGUI(Game game) {
         JFrame frame = new JFrame("Othello");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
