@@ -36,5 +36,34 @@ public class XMLBuilder {
         return element;
     }
 
-    // Outros métodos para criar diferentes tipos de mensagens XML...
+    // Método para criar um documento XML de registro de jogadas
+    public static Document createPlayXML(Player player, int row, int col) throws Exception {
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document  doc = dBuilder.newDocument();
+
+        // Elemento raiz
+        Element rootElement = doc.createElement("game");
+        doc.appendChild(rootElement);
+
+        // Adiciona elementos ao documento
+        Element users = doc.createElement("players");
+        rootElement.appendChild(users);
+
+        Element user = doc.createElement("player");
+        users.appendChild(user);
+        user.appendChild(createElement(doc, "nickname", player.getNickname()));
+        user.appendChild(createElement(doc, "color", "BLACK"));
+
+        Element move = doc.createElement("move");
+        rootElement.appendChild(move);
+        move.appendChild(createElement(doc, "nickname", player.getNickname()));
+
+        Element position = doc.createElement("position");
+        rootElement.appendChild(position);
+        position.appendChild(createElement(doc, "row", String.valueOf(row)));
+        position.appendChild(createElement(doc, "col", String.valueOf(col)));
+
+        return doc;
+    }
 }

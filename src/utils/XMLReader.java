@@ -43,6 +43,14 @@ public class XMLReader {
         return new Player(nickname, password, nationality, age, photo);
     }
 
+//    public static Player extractPlayFromXML(Document xmlDoc) {
+//        Element root = xmlDoc.getDocumentElement();
+//        String nickname = getElementValue(root, "nickname");
+//        int row = Integer.parseInt(getElementValue(root, "row"));
+//        int col = Integer.parseInt(getElementValue(root, "col"));
+//        return new Play(nickname, color, row, col);
+//    }
+
     private static String getElementValue(Element parent, String tagName) {
         NodeList nodeList = parent.getElementsByTagName(tagName);
         if (nodeList.getLength() > 0) {

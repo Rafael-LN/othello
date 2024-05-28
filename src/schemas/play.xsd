@@ -1,0 +1,56 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- Definição do elemento raiz 'game' -->
+    <xs:element name="game">
+        <xs:complexType>
+            <xs:sequence>
+                <!-- Elemento para definir os jogadores -->
+                <xs:element name="players" type="playersType"/>
+                <!-- Elemento para definir as jogadas -->
+                <xs:element name="move" type="moveType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Tipo complexo para a lista de jogadores -->
+    <xs:complexType name="playersType">
+        <xs:sequence>
+            <xs:element name="player" type="playerType" maxOccurs="2" minOccurs="2"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Tipo complexo para um jogador -->
+    <xs:complexType name="playerType">
+        <xs:sequence>
+            <xs:element name="nickname" type="xs:string"/>
+            <xs:element name="color" type="colorType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Tipo simples para a cor do jogador (BLACK ou WHITE) -->
+    <xs:simpleType name="colorType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="BLACK"/>
+            <xs:enumeration value="WHITE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Tipo complexo para uma jogada -->
+    <xs:complexType name="moveType">
+        <xs:sequence>
+            <!-- Elemento para identificar o jogador que fez a jogada -->
+            <xs:element name="nickname" type="xs:string"/>
+            <!-- Elemento para identificar a posição da jogada -->
+            <xs:element name="position" type="positionType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Tipo complexo para a posição da jogada -->
+    <xs:complexType name="positionType">
+        <xs:sequence>
+            <xs:element name="row" type="xs:int"/>
+            <xs:element name="col" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
