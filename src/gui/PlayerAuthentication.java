@@ -28,7 +28,7 @@ public class PlayerAuthentication extends JFrame {
         loginButton.setPreferredSize(new Dimension(60, 20));
         loginButton.addActionListener(e -> {
             // Add login functionality
-            JOptionPane.showMessageDialog(null, "Login functionality will be implemented here.");
+            new PlayerLogin(out);
         });
         buttonPanel.add(loginButton);
 
