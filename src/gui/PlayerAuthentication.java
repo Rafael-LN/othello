@@ -2,10 +2,14 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.ObjectOutputStream;
 
 public class PlayerAuthentication extends JFrame {
     private JButton loginButton, registerButton;
+    private PlayerLogin loginInstance;
+    private PlayerRegistration registrationInstance;
 
     public PlayerAuthentication(ObjectOutputStream out) {
         setTitle("Player Authentication");
@@ -26,25 +30,32 @@ public class PlayerAuthentication extends JFrame {
 
         loginButton = new JButton("Login");
         loginButton.setPreferredSize(new Dimension(60, 20));
-        loginButton.addActionListener(e -> {
-            // Add login functionality
-            new PlayerLogin(out);
-        });
+        loginButton.addActionListener(e -> showLoginWindow(out) );
         buttonPanel.add(loginButton);
 
         registerButton = new JButton("Register");
         loginButton.setPreferredSize(new Dimension(60, 20));
-        registerButton.addActionListener(e -> {
-            // Add register functionality
-            new PlayerRegistration(out);
-
-        });
+        registerButton.addActionListener(e -> showRegisterWindow(out) );
         buttonPanel.add(registerButton);
 
         panel.add(buttonPanel, BorderLayout.CENTER);
 
         add(panel);
         setVisible(true);
+    }
+
+    private void showLoginWindow(ObjectOutputStream out) {
+        if (loginInstance == null || !loginInstance.isVisible()) {
+            loginInstance = new PlayerLogin(out);
+            loginInstance.setVisible(true);
+        }
+    }
+
+    private void showRegisterWindow(ObjectOutputStream out) {
+        if (registrationInstance == null ||!registrationInstance.isVisible()) {
+            registrationInstance = new PlayerRegistration(out);
+            registrationInstance.setVisible(true);
+        }
     }
 }
 
