@@ -1,5 +1,6 @@
 package client;
 
+import gui.PlayerAuthentication;
 import gui.PlayerRegistration;
 import model.Player;
 
@@ -36,13 +37,13 @@ public class OthelloClient {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             Player player = null;
 
-            PlayerRegistration registrationWindow = new PlayerRegistration(out); // Create the registration window once
-            registrationWindow.setVisible(false);
+            PlayerAuthentication playerAuthentication = new PlayerAuthentication(out); // Create the registration window once
+            playerAuthentication.setVisible(false);
 
             while (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
 
-                if (!clientHandler.isPlayerRegistered()) {
-                    registrationWindow.setVisible(true);
+                if (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
+                    playerAuthentication.setVisible(true);
                 }
             }
         } catch (IOException e) {

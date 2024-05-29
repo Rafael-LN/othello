@@ -1,3 +1,5 @@
+package game;
+
 /**
  * Objetivo do Jogo:
  * O objetivo do Othello é ter mais peças da sua cor (pretas ou brancas) no tabuleiro do que o seu oponente ao final do jogo.
@@ -34,7 +36,7 @@ public class Game {
     private int currentPlayer;
 
     /**
-     * Construtor da classe Game.
+     * Construtor da classe game.Game.
      * Inicializa o tabuleiro com as peças iniciais.
      */
     public Game() {
