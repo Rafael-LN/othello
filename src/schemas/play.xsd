@@ -1,7 +1,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <!-- Definição do elemento raiz 'game' -->
-    <xs:element name="game">
+    <xs:element name="request">
         <xs:complexType>
             <xs:sequence>
                 <!-- Elemento para definir os jogadores -->
@@ -52,5 +52,15 @@
             <xs:element name="col" type="xs:int"/>
         </xs:sequence>
     </xs:complexType>
+
+    <xs:element name="response">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="status" type="xs:string"/>
+                <xs:element name="message" type="xs:string"/>
+            </xs:sequence>
+            <xs:attribute name="type" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
 
 </xs:schema>
