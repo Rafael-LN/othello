@@ -8,33 +8,68 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 public class XMLBuilder {
-    // Método para criar um documento XML de registro de jogador
+
     public static Document createPlayerRegistrationXML(Player player) throws Exception {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.newDocument();
+        Document doc = createDocument();
+        Element rootElement = createRootElement(doc, "request", "type", "register");
 
-        // Elemento raiz
-        Element rootElement = doc.createElement("request");
-        rootElement.setAttribute("type", "register");
-        doc.appendChild(rootElement);
+        appendChildElements(doc, rootElement,
+                new String[]{"nickname", "password", "nationality", "age", "photo"},
+                new String[]{player.getNickname(), player.getPassword(), player.getNationality(),
+                        String.valueOf(player.getAge()), player.getBase64Photo()});
+        return doc;
+    }
 
-        // Adiciona elementos ao documento
-        rootElement.appendChild(createElement(doc, "nickname", player.getNickname()));
-        rootElement.appendChild(createElement(doc, "password", player.getPassword()));
-        rootElement.appendChild(createElement(doc, "nationality", player.getNationality()));
-        rootElement.appendChild(createElement(doc, "age", String.valueOf(player.getAge())));
-        rootElement.appendChild(createElement(doc, "photo", player.getBase64Photo()));
+    public static Document createPlayXML(Player player, int row, int col) throws Exception {
+        Document doc = createDocument();
+        Element rootElement = createRootElement(doc, "game", null, null);
+
+        Element users = doc.createElement("players");
+        rootElement.appendChild(users);
+
+        Element user = doc.createElement("player");
+        users.appendChild(user);
+
+        appendChildElements(doc, user,
+                new String[]{"nickname", "color"},
+                new String[]{player.getNickname(), "BLACK"});
+
+        Element move = doc.createElement("move");
+        rootElement.appendChild(move);
+        appendChildElements(doc, move, new String[]{"nickname"}, new String[]{player.getNickname()});
+
+        Element position = doc.createElement("position");
+        rootElement.appendChild(position);
+        appendChildElements(doc, position, new String[]{"row", "col"},
+                new String[]{String.valueOf(row), String.valueOf(col)});
 
         return doc;
     }
 
-    // Método para criar elementos XML
+    private static void appendChildElements(Document doc, Element parent, String[] tagNames, String[] textContents) {
+        for (int i = 0; i < tagNames.length; i++) {
+            parent.appendChild(createElement(doc, tagNames[i], textContents[i]));
+        }
+    }
+
     private static Element createElement(Document doc, String tagName, String textContent) {
         Element element = doc.createElement(tagName);
         element.appendChild(doc.createTextNode(textContent));
         return element;
     }
 
-    // Outros métodos para criar diferentes tipos de mensagens XML...
+    private static Document createDocument() throws Exception {
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        return dBuilder.newDocument();
+    }
+
+    private static Element createRootElement(Document doc, String rootName, String attributeName, String attributeValue) {
+        Element rootElement = doc.createElement(rootName);
+        if (attributeName != null && attributeValue != null) {
+            rootElement.setAttribute(attributeName, attributeValue);
+        }
+        doc.appendChild(rootElement);
+        return rootElement;
+    }
 }
