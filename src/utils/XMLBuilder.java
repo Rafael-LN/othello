@@ -9,6 +9,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 public class XMLBuilder {
 
+    public static Document createLoginXML(Player player) throws Exception {
+        Document doc = createDocument();
+        Element rootElement = createRootElement(doc, "request", "type", "login");
+
+        appendChildElements(doc, rootElement,
+                new String[]{"nickname", "password"},
+                new String[]{player.getNickname(), player.getPassword()});
+
+        return doc;
+    }
+
     public static Document createPlayerRegistrationXML(Player player) throws Exception {
         Document doc = createDocument();
         Element rootElement = createRootElement(doc, "request", "type", "register");
