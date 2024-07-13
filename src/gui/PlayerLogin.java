@@ -5,6 +5,8 @@ import services.PlayerService;
 import utils.GuiUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.io.ObjectOutputStream;
 
@@ -57,6 +59,7 @@ public class PlayerLogin extends JFrame {
                 throw new RuntimeException(ex);
             }
         });
+        loginButton.setEnabled(false);
 
         registerButton = GuiUtils.createButton("Register", new Color(240, 128, 128), e -> {
             PlayerRegistration registrationWindow = new PlayerRegistration(out);
@@ -66,12 +69,38 @@ public class PlayerLogin extends JFrame {
         southPanel.add(loginButton);
         southPanel.add(registerButton);
 
-        // Adding panels to the main panel
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         mainPanel.add(southPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
+
+        DocumentListener documentListener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateLoginButtonState();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateLoginButtonState();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateLoginButtonState();
+            }
+        };
+
+        usernameField.getDocument().addDocumentListener(documentListener);
+        passwordField.getDocument().addDocumentListener(documentListener);
+
         setVisible(true);
+    }
+
+    private void updateLoginButtonState() {
+        String username = usernameField.getText();
+        String password = new String(passwordField.getPassword());
+        loginButton.setEnabled(!username.isEmpty() && !password.isEmpty());
     }
 
     // For testing purposes
