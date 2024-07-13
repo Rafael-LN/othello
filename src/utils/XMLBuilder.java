@@ -6,8 +6,24 @@ import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.File;
 
 public class XMLBuilder {
+
+    public static Document createLoginXML(Player player) throws Exception {
+        Document doc = createDocument();
+        Element rootElement = createRootElement(doc, "request", "type", "login");
+
+        appendChildElements(doc, rootElement,
+                new String[]{"nickname", "password"},
+                new String[]{player.getNickname(), player.getPassword()});
+
+        return doc;
+    }
 
     public static Document createPlayerRegistrationXML(Player player) throws Exception {
         Document doc = createDocument();
@@ -71,5 +87,18 @@ public class XMLBuilder {
         }
         doc.appendChild(rootElement);
         return rootElement;
+    }
+
+    public static boolean validateXML(Document xml, String xsdPath) {
+        try {
+            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            Schema schema = factory.newSchema(new File(xsdPath));
+            Validator validator = schema.newValidator();
+            validator.validate(new DOMSource(xml));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
