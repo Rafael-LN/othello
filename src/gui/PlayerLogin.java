@@ -1,5 +1,7 @@
 package gui;
 
+import model.Player;
+import services.PlayerService;
 import utils.GuiUtils;
 
 import javax.swing.*;
@@ -10,8 +12,10 @@ public class PlayerLogin extends JFrame {
     private JButton loginButton, registerButton;
     private JTextField usernameField;
     private JPasswordField passwordField;
+    private PlayerService playerService;
 
     public PlayerLogin(ObjectOutputStream out) {
+        playerService = new PlayerService(out);
         setTitle("Login");
         setSize(400, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -40,11 +44,16 @@ public class PlayerLogin extends JFrame {
         southPanel.setBackground(new Color(255, 250, 240)); // Match background color with main panel
 
         loginButton = GuiUtils.createButton("Login", new Color(173, 216, 230), e -> {
-            // Handle login logic
-            String username = usernameField.getText();
-            char[] password = passwordField.getPassword();
-            // Perform login action with username and password
-            JOptionPane.showMessageDialog(this, "Login button clicked with username: " + username);
+            try {
+                String username = usernameField.getText();
+                String password = new String(((JPasswordField) passwordField).getPassword());
+
+                Player player = new Player(username, password);
+                playerService.loginPlayer(player);
+                JOptionPane.showMessageDialog(this, "Login button clicked with username: " + username);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         registerButton = GuiUtils.createButton("Register", new Color(240, 128, 128), e -> {

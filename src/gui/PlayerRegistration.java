@@ -1,20 +1,14 @@
 package gui;
 
 import model.Player;
-import org.w3c.dom.Document;
-import utils.XMLBuilder;
+import services.PlayerService;
 
 import javax.swing.*;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -23,8 +17,10 @@ public class PlayerRegistration extends JFrame {
     private JButton photoButton, registerButton;
     private JLabel photoPreviewLabel;
     private byte[] photoData;
+    private PlayerService playerService;
 
     public PlayerRegistration(ObjectOutputStream out) {
+        playerService = new PlayerService(out);
         setTitle("Player Registration");
         setSize(600, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -63,8 +59,8 @@ public class PlayerRegistration extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 // Open file chooser dialog to select a photo
                 JFileChooser fileChooser = new JFileChooser();
-
                 int result = fileChooser.showOpenDialog(null);
+
                 if (result == JFileChooser.APPROVE_OPTION) {
                     try {
                         // Get the selected file path
@@ -72,7 +68,6 @@ public class PlayerRegistration extends JFrame {
                         photoData = Files.readAllBytes(photoPath);
 
                         // Load and display the selected image
-
                         ImageIcon imageIcon = new ImageIcon(photoData);
                         // Scale the image to fit the label
                         Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
@@ -100,29 +95,14 @@ public class PlayerRegistration extends JFrame {
         registerButton = new JButton("Register");
         registerButton.addActionListener(e -> {
             try {
-                // Collect player information from the text fields
                 String nickname = nicknameField.getText();
                 String password = new String(((JPasswordField) passwordField).getPassword());
                 String nationality = nationalityField.getText();
                 int age = Integer.parseInt(ageField.getText());
 
-                // Create and return a new Player object
                 Player player = new Player(nickname, password, nationality, age, photoData);
-
-                Document playerXML = XMLBuilder.createPlayerRegistrationXML(player);
-
-                // Transforma o documento XML em uma string
-                String playerXMLString = transformDocumentToString(playerXML);
-
-                // Envie o XML para o servidor
-                out.writeObject(playerXMLString);
-
-                // Send the player object to the server
-                out.writeObject(player);
-                out.flush();
-
-                System.out.println("Player registration successful:\n" + player);
-            } catch (NumberFormatException | IOException ex) {
+                playerService.registerPlayer(player);
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Invalid age format. Please enter a valid integer.");
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -137,15 +117,6 @@ public class PlayerRegistration extends JFrame {
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(panel);
-    }
-
-    private static String transformDocumentToString(Document doc) throws Exception {
-        // Transforma o documento XML em uma string
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        StringWriter writer = new StringWriter();
-        transformer.transform(new DOMSource(doc), new StreamResult(writer));
-        return writer.getBuffer().toString();
     }
 
     // Only for testing purposes

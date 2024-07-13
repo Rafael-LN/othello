@@ -1,16 +1,27 @@
 package gui;
 
+import gui.commands.Command;
+import gui.commands.OpenLoginCommand;
+import gui.commands.OpenRegisterCommand;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * A GUI for player authentication, allowing users to choose between login and registration.
+ */
 public class PlayerAuthentication extends JFrame {
     private JButton loginButton, registerButton;
-    private PlayerLogin loginInstance;
-    private PlayerRegistration registrationInstance;
+    private Map<JButton, Command> buttonCommandMap = new HashMap<>();
 
+    /**
+     * Constructs a new PlayerAuthentication window.
+     *
+     * @param out the ObjectOutputStream to be used for sending data to the server
+     */
     public PlayerAuthentication(ObjectOutputStream out) {
         setTitle("Player Authentication");
         setSize(400, 200);
@@ -30,12 +41,12 @@ public class PlayerAuthentication extends JFrame {
 
         loginButton = new JButton("Login");
         loginButton.setPreferredSize(new Dimension(60, 20));
-        loginButton.addActionListener(e -> showLoginWindow(out) );
+        loginButton.addActionListener(e -> new OpenLoginCommand(this, out).execute());
         buttonPanel.add(loginButton);
 
         registerButton = new JButton("Register");
-        loginButton.setPreferredSize(new Dimension(60, 20));
-        registerButton.addActionListener(e -> showRegisterWindow(out) );
+        registerButton.setPreferredSize(new Dimension(60, 20));
+        registerButton.addActionListener(e -> new OpenRegisterCommand(this, out).execute());
         buttonPanel.add(registerButton);
 
         panel.add(buttonPanel, BorderLayout.CENTER);
@@ -44,18 +55,5 @@ public class PlayerAuthentication extends JFrame {
         setVisible(true);
     }
 
-    private void showLoginWindow(ObjectOutputStream out) {
-        if (loginInstance == null || !loginInstance.isVisible()) {
-            loginInstance = new PlayerLogin(out);
-            loginInstance.setVisible(true);
-        }
-    }
-
-    private void showRegisterWindow(ObjectOutputStream out) {
-        if (registrationInstance == null ||!registrationInstance.isVisible()) {
-            registrationInstance = new PlayerRegistration(out);
-            registrationInstance.setVisible(true);
-        }
-    }
 }
 
