@@ -1,104 +1,79 @@
 package utils;
 
-import model.Player;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import java.io.File;
+/**
+ * A utility class for creating XML documents.
+ * <p>
+ * This class is based on XMLDoc provided by Eng. Porfírio Filipe.
+ */
+public class XMLBuilder extends XMLHandler {
 
-public class XMLBuilder {
-
-    public static Document createLoginXML(Player player) throws Exception {
+    /**
+     * Creates a generic XML document.
+     *
+     * @param rootName the name of the root element
+     * @param elements an array of element tag names and their corresponding text contents
+     * @param attributes an array of attribute names and values for the root element (nullable)
+     * @return the created XML document
+     * @throws Exception if an error occurs during document creation
+     */
+    public static Document createXML(String rootName, String[][] elements, String[][] attributes) throws Exception {
         Document doc = createDocument();
-        Element rootElement = createRootElement(doc, "request", "type", "login");
+        Element rootElement = createRootElement(doc, rootName, attributes);
 
-        appendChildElements(doc, rootElement,
-                new String[]{"nickname", "password"},
-                new String[]{player.getNickname(), player.getPassword()});
-
-        return doc;
-    }
-
-    public static Document createPlayerRegistrationXML(Player player) throws Exception {
-        Document doc = createDocument();
-        Element rootElement = createRootElement(doc, "request", "type", "register");
-
-        appendChildElements(doc, rootElement,
-                new String[]{"nickname", "password", "nationality", "age", "photo"},
-                new String[]{player.getNickname(), player.getPassword(), player.getNationality(),
-                        String.valueOf(player.getAge()), player.getBase64Photo()});
-        return doc;
-    }
-
-    public static Document createPlayXML(Player player, int row, int col) throws Exception {
-        Document doc = createDocument();
-        Element rootElement = createRootElement(doc, "game", null, null);
-
-        Element users = doc.createElement("players");
-        rootElement.appendChild(users);
-
-        Element user = doc.createElement("player");
-        users.appendChild(user);
-
-        appendChildElements(doc, user,
-                new String[]{"nickname", "color"},
-                new String[]{player.getNickname(), "BLACK"});
-
-        Element move = doc.createElement("move");
-        rootElement.appendChild(move);
-        appendChildElements(doc, move, new String[]{"nickname"}, new String[]{player.getNickname()});
-
-        Element position = doc.createElement("position");
-        rootElement.appendChild(position);
-        appendChildElements(doc, position, new String[]{"row", "col"},
-                new String[]{String.valueOf(row), String.valueOf(col)});
-
-        return doc;
-    }
-
-    private static void appendChildElements(Document doc, Element parent, String[] tagNames, String[] textContents) {
-        for (int i = 0; i < tagNames.length; i++) {
-            parent.appendChild(createElement(doc, tagNames[i], textContents[i]));
+        for (String[] element : elements) {
+            appendChildElements(doc, rootElement, new String[]{element[0]}, new String[]{element[1]});
         }
+
+        return doc;
     }
 
-    private static Element createElement(Document doc, String tagName, String textContent) {
-        Element element = doc.createElement(tagName);
-        element.appendChild(doc.createTextNode(textContent));
-        return element;
-    }
-
-    private static Document createDocument() throws Exception {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        return dBuilder.newDocument();
-    }
-
-    private static Element createRootElement(Document doc, String rootName, String attributeName, String attributeValue) {
+    /**
+     * Creates a root element with optional attributes.
+     *
+     * @param doc the XML document
+     * @param rootName the name of the root element
+     * @param attributes an array of attribute names and values for the root element (nullable)
+     * @return the created root element
+     */
+    private static Element createRootElement(Document doc, String rootName, String[][] attributes) {
         Element rootElement = doc.createElement(rootName);
-        if (attributeName != null && attributeValue != null) {
-            rootElement.setAttribute(attributeName, attributeValue);
+        if (attributes != null) {
+            for (String[] attribute : attributes) {
+                rootElement.setAttribute(attribute[0], attribute[1]);
+            }
         }
         doc.appendChild(rootElement);
         return rootElement;
     }
 
-    public static boolean validateXML(Document xml, String xsdPath) {
-        try {
-            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-            Schema schema = factory.newSchema(new File(xsdPath));
-            Validator validator = schema.newValidator();
-            validator.validate(new DOMSource(xml));
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+    /**
+     * Adds child elements to a parent element.
+     *
+     * @param doc the XML document
+     * @param parent the parent element
+     * @param tagNames an array of tag names for the child elements
+     * @param textContents an array of text contents for the child elements
+     */
+    protected static void appendChildElements(Document doc, Element parent, String[] tagNames, String[] textContents) {
+        for (int i = 0; i < tagNames.length; i++) {
+            parent.appendChild(createElement(doc, tagNames[i], textContents[i]));
         }
+    }
+
+    /**
+     * Creates a new element with text content.
+     *
+     * @param doc the XML document
+     * @param tagName the tag name of the element
+     * @param textContent the text content of the element
+     * @return the created element
+     */
+    protected static Element createElement(Document doc, String tagName, String textContent) {
+        Element element = doc.createElement(tagName);
+        element.appendChild(doc.createTextNode(textContent));
+        return element;
     }
 }
