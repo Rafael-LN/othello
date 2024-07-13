@@ -3,6 +3,7 @@ package gui;
 import gui.commands.Command;
 import gui.commands.OpenLoginCommand;
 import gui.commands.OpenRegisterCommand;
+import utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,37 +24,39 @@ public class PlayerAuthentication extends JFrame {
      * @param out the ObjectOutputStream to be used for sending data to the server
      */
     public PlayerAuthentication(ObjectOutputStream out) {
-        setTitle("Player Authentication");
+        setTitle("Othello Game");
         setSize(400, 200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel.setBackground(new Color(255, 250, 240)); // Pastel background color
 
-        JLabel titleLabel = new JLabel("Bem vindo ao Jogo Othello");
+        JLabel titleLabel = new JLabel("Welcome to Othello Game");
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0)); // Add space between title and buttons
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // Add space between title and subtitle
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         panel.add(titleLabel, BorderLayout.NORTH);
 
-        JPanel buttonPanel = new JPanel();
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 50, 50, 50)); // Add padding
-        buttonPanel.setLayout(new GridLayout(1, 2, 20, 10));
+        JLabel subtitleLabel  = new JLabel("Please login or register to continue");
+        subtitleLabel .setHorizontalAlignment(SwingConstants.CENTER);
+        subtitleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0)); // Add space between subtitle and buttons
+        subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        panel.add(subtitleLabel, BorderLayout.CENTER);
 
-        loginButton = new JButton("Login");
-        loginButton.setPreferredSize(new Dimension(60, 20));
-        loginButton.addActionListener(e -> new OpenLoginCommand(this, out).execute());
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        buttonPanel.setBackground(new Color(255, 250, 240)); // Match the background color
+
+        loginButton = GuiUtils.createButton("Login", new Color(173, 216, 230), e -> new OpenLoginCommand(this, out).execute());
+        registerButton = GuiUtils.createButton("Register", new Color(240, 128, 128), e -> new OpenRegisterCommand(this, out).execute());
+
         buttonPanel.add(loginButton);
-
-        registerButton = new JButton("Register");
-        registerButton.setPreferredSize(new Dimension(60, 20));
-        registerButton.addActionListener(e -> new OpenRegisterCommand(this, out).execute());
         buttonPanel.add(registerButton);
 
-        panel.add(buttonPanel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(panel);
         setVisible(true);
     }
-
 }
-
