@@ -22,7 +22,7 @@ public class PlayerLogin extends JFrame {
         setSize(400, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        // game.Main panel with BorderLayout and pastel background color
+        // main panel with BorderLayout and pastel background color
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(new Color(255, 250, 240)); // Pastel background color
@@ -46,20 +46,21 @@ public class PlayerLogin extends JFrame {
         southPanel.setBackground(new Color(255, 250, 240)); // Match background color with main panel
 
         loginButton = GuiUtils.createButton("Login", new Color(173, 216, 230), e -> {
-            try {
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
+            if (usernameField.getText().isEmpty() || new String(passwordField.getPassword()).isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill in both username and password", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                try {
+                    String username = usernameField.getText();
+                    String password = new String(passwordField.getPassword());
 
-                Player player = new Player(username, password);
-                playerService.loginPlayer(player);
-                JOptionPane.showMessageDialog(this, "Login button clicked with username: " + username);
-                Lobby lobby = new Lobby(out);
-                lobby.setVisible(true);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                    Player player = new Player(username, password);
+                    playerService.loginPlayer(player);
+                    JOptionPane.showMessageDialog(this, "Login button clicked with username: " + username);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
-        loginButton.setEnabled(false);
 
         registerButton = GuiUtils.createButton("Register", new Color(240, 128, 128), e -> {
             PlayerRegistration registrationWindow = new PlayerRegistration(out);
