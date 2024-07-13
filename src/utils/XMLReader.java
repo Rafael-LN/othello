@@ -1,61 +1,64 @@
 package utils;
 
-import model.Player;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.XMLConstants;
 import org.xml.sax.SAXException;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 
-public class XMLReader {
+/**
+ * A utility class for reading and validating XML documents.
+ * <p>
+ * This class is based on XMLDoc provided by Eng. Porfírio Filipe.
+ */
+public class XMLReader extends XMLHandler {
 
-    public static Document convertStringToDocument(String xmlString) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse(new ByteArrayInputStream(xmlString.getBytes()));
-    }
-
+    /**
+     * Validates an XML document against an XSD schema.
+     *
+     * @param xmlDoc the XML document to validate
+     * @param xsdPath the path to the XSD schema file
+     * @return true if the document is valid, false otherwise
+     * @throws SAXException if a SAX error occurs during validation
+     * @throws IOException if an IO error occurs during validation
+     */
     public static boolean validateXML(Document xmlDoc, String xsdPath) throws SAXException, IOException {
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = factory.newSchema(new StreamSource(new File(xsdPath)));
-        schema.newValidator().validate(new DOMSource(xmlDoc));
-        return true;
-    }
-
-    public static Player extractPlayerFromXML(Document xmlDoc) {
-        Element root = xmlDoc.getDocumentElement();
-        String nickname = getElementValue(root, "nickname");
-        String password = getElementValue(root, "password");
-        String nationality = getElementValue(root, "nationality");
-        int age = Integer.parseInt(getElementValue(root, "age"));
-        byte[] photo = Base64.getDecoder().decode(getElementValue(root, "photo"));
-        return new Player(nickname, password, nationality, age, photo);
-    }
-
-//    public static Player extractPlayFromXML(Document xmlDoc) {
-//        Element root = xmlDoc.getDocumentElement();
-//        String nickname = getElementValue(root, "nickname");
-//        int row = Integer.parseInt(getElementValue(root, "row"));
-//        int col = Integer.parseInt(getElementValue(root, "col"));
-//        return new Play(nickname, color, row, col);
-//    }
-
-    private static String getElementValue(Element parent, String tagName) {
-        NodeList nodeList = parent.getElementsByTagName(tagName);
-        if (nodeList.getLength() > 0) {
-            return nodeList.item(0).getTextContent();
+        try {
+            validDocXSD(xmlDoc, xsdPath);
+            return true;
+        } catch (SAXException | IOException e) {
+            e.printStackTrace();
+            return false;
         }
-        return null;
+    }
+
+    /**
+     * Extracts a value from an XML document using an XPath expression.
+     *
+     * @param xmlDoc the XML document
+     * @param expression the XPath expression
+     * @return the value of the first matching node
+     */
+    public static String extractValueFromXML(Document xmlDoc, String expression) {
+        return getXPathValue(expression, xmlDoc);
+    }
+
+    /**
+     * Converts an XML string to a Document object.
+     *
+     * @param xmlString the XML string
+     * @return the parsed Document object
+     * @throws Exception if an error occurs during parsing
+     */
+    public static Document convertStringToDocument(String xmlString) throws Exception {
+        return parseString(xmlString);
+    }
+
+    /**
+     * Converts an XML file to a Document object.
+     *
+     * @param xmlFilePath the path to the XML file
+     * @return the parsed Document object
+     */
+    public static Document convertFileToDocument(String xmlFilePath) {
+        return parseFile(xmlFilePath);
     }
 }
