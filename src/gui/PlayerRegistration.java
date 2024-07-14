@@ -102,6 +102,9 @@ public class PlayerRegistration extends JFrame {
 
                 Player player = new Player(nickname, password, nationality, age, photoData);
                 playerService.registerPlayer(player);
+                Lobby lobby = new Lobby(out);
+                lobby.setVisible(true);
+                setVisible(false);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Invalid age format. Please enter a valid integer.");
             } catch (Exception ex) {
