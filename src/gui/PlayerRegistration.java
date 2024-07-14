@@ -3,6 +3,7 @@ package gui;
 import model.Player;
 import services.PlayerService;
 import utils.GuiUtils;
+import utils.NumericDocumentFilter;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
