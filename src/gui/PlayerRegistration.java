@@ -5,6 +5,7 @@ import services.PlayerService;
 import utils.GuiUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -88,6 +89,12 @@ public class PlayerRegistration extends JFrame {
 
     private void choosePhoto(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
+        // Create a FileNameExtensionFilter for image files
+        FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
+                "Image files", "jpg", "jpeg", "png", "gif");
+
+        // Set the file filter for the JFileChooser
+        fileChooser.setFileFilter(imageFilter);
         int result = fileChooser.showOpenDialog(null);
 
         if (result == JFileChooser.APPROVE_OPTION) {
