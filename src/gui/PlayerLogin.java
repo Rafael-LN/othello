@@ -46,11 +46,13 @@ public class PlayerLogin extends JFrame {
         loginButton = GuiUtils.createButton("Login", new Color(173, 216, 230), e -> {
             try {
                 String username = usernameField.getText();
-                String password = new String(((JPasswordField) passwordField).getPassword());
+                String password = new String(passwordField.getPassword());
 
                 Player player = new Player(username, password);
                 playerService.loginPlayer(player);
                 JOptionPane.showMessageDialog(this, "Login button clicked with username: " + username);
+                Lobby lobby = new Lobby(out);
+                lobby.setVisible(true);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
