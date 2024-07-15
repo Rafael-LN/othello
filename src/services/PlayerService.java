@@ -9,6 +9,7 @@ import utils.XMLReader;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 /**
  * Service class for handling player operations such as registration and login.
@@ -71,8 +72,6 @@ public class PlayerService {
         // Send the XML string to the server
         out.writeObject(playerXMLString);
         out.flush();
-
-        System.out.println("Player login sent:\n" + player);
     }
 
     /**
@@ -88,6 +87,12 @@ public class PlayerService {
         int age = Integer.parseInt(XMLReader.extractValueFromXML(xmlDoc, "//age"));
         byte[] photo = java.util.Base64.getDecoder().decode(XMLReader.extractValueFromXML(xmlDoc, "//photo"));
         return new Player(nickname, password, nationality, age, photo);
+    }
+
+    public Player extractLoginFromXML(Document xmlDoc) {
+        String username = XMLReader.extractValueFromXML(xmlDoc, "//username");
+        String password = XMLReader.extractValueFromXML(xmlDoc, "//password");
+        return new Player(username, password);
     }
 
     /**
@@ -160,13 +165,13 @@ public class PlayerService {
             // Validate XML against XSD
             if (XMLReader.validateXML(xmlDoc, LOGIN_XSD)) {
                 // Extract Player object from XML using PlayerService
-                player = extractPlayerFromXML(xmlDoc);
+                player = extractLoginFromXML(xmlDoc);
 
                 // Validate player login
-                /*if (playerDatabase.validateLogin(player, out)) {
+                if (playerDatabase.validateLogin(player)) {
                     // Notify client that login is successful
                     sendResponse("success", "Login successful. Welcome, " + player.getNickname() + "!");
-                }*/
+                }
             } else {
                 // Notify client that the XML is invalid
                 sendResponse("error", "Invalid XML format.");
@@ -176,5 +181,9 @@ public class PlayerService {
             sendResponse("error", "Error processing login.");
         }
         return player;
+    }
+
+    public List<Player> getPlayers() {
+        return playerDatabase.loadPlayers();
     }
 }

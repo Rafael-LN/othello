@@ -1,8 +1,6 @@
 package client;
 
-import enums.PanelType;
 import gui.MainWindow;
-import gui.PlayerAuthentication;
 
 import java.io.*;
 import java.net.Socket;
@@ -48,7 +46,11 @@ public class OthelloClient {
                 // Proceed with the next steps, like entering the game lobby or starting a game
                 // Example:
                 System.out.println("Player registered and logged in. Proceeding to the game lobby...");
-                // TODO: Add logic for game lobby or game start
+
+                // After exiting the lobby, the game should start
+                System.out.println("Both players ready. Starting the game...");
+
+                // TODO: Add logic for game start
             }
         } catch (IOException e) {
             e.printStackTrace();

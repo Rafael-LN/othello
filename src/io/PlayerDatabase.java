@@ -35,7 +35,7 @@ public class PlayerDatabase {
         return players.stream().filter(p -> p.getNickname().equals(nickname)).findFirst().orElse(null);
     }
 
-    private List<Player> loadPlayers() {
+    public List<Player> loadPlayers() {
         List<Player> players = new ArrayList<>();
         try (FileInputStream fileIn = new FileInputStream(FILE_PATH);
              ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
@@ -62,5 +62,9 @@ public class PlayerDatabase {
         } catch (IOException e) {
             throw new RuntimeException("Error saving players: " + e.getMessage(), e);
         }
+    }
+
+    public boolean validateLogin(Player player) {
+        return getPlayer(player.getNickname()) != null;
     }
 }
