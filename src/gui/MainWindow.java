@@ -38,6 +38,7 @@ public class MainWindow extends JFrame {
         cardPanel.add(new PlayerAuthentication(this), PanelType.AUTHENTICATION.getPanelType());
         cardPanel.add(new PlayerLogin(this), PanelType.LOGIN.getPanelType());
         cardPanel.add(new PlayerRegistration(this), PanelType.REGISTRATION.getPanelType());
+        cardPanel.add(new Lobby(this), PanelType.LOBBY.getPanelType());
 
         setContentPane(cardPanel);
         changePanel(PanelType.AUTHENTICATION);
@@ -48,6 +49,7 @@ public class MainWindow extends JFrame {
         panelConfigMap.put(PanelType.AUTHENTICATION.getPanelType(), new PanelConfig("Othello Game", 400, 200));
         panelConfigMap.put(PanelType.LOGIN.getPanelType(), new PanelConfig("Login", 400, 250));
         panelConfigMap.put(PanelType.REGISTRATION.getPanelType(), new PanelConfig("Player Registration", 600, 300));
+        panelConfigMap.put(PanelType.LOBBY.getPanelType(), new PanelConfig("Lobby", 600, 300));
     }
 
     public void changePanel(PanelType panelType) {
@@ -67,7 +69,7 @@ public class MainWindow extends JFrame {
     }
 
     public void showMessageDialog(String type, String message) {
-        JOptionPane.showMessageDialog(this, message, type, JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showConfirmDialog(this, message, type, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
     }
 
     private static class PanelConfig {

@@ -1,5 +1,6 @@
 package client;
 
+import enums.PanelType;
 import gui.MainWindow;
 import org.w3c.dom.Document;
 import utils.XMLReader;
@@ -40,7 +41,7 @@ public class ClientHandler extends Thread {
                 String status = XMLReader.extractValueFromXML(xmlDoc, "//status");
                 String message = XMLReader.extractValueFromXML(xmlDoc, "//message");
 
-                if (status != null && status.equals("1")) {
+                if (status != null && status.equals("success")) {
                     if (message.contains("Registration successful")) {
                         isPlayerRegistered = message;
                         gui.showMessageDialog("Registration", message);
@@ -48,13 +49,11 @@ public class ClientHandler extends Thread {
                         isPlayerLogged = message;
                         gui.showMessageDialog("Login", message);
                     }
-                } else if (status.equals("2"))  {
+                    gui.changePanel(PanelType.LOBBY);
+                } else if (status.equals("error"))  {
                    gui.showMessageDialog("Error", message);
                 }
 
-                synchronized (this) {
-                    notifyAll();
-                }
             }
 
         } catch (IOException e) {
