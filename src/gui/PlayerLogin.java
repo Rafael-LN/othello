@@ -79,7 +79,6 @@ public class PlayerLogin extends JPanel {
 
                     Player player = new Player(username, password);
                     gui.getPlayerService().loginPlayer(player);
-                    JOptionPane.showMessageDialog(this, "Login button clicked with username: " + username);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
