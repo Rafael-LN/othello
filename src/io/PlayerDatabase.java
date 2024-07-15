@@ -2,12 +2,7 @@ package io;
 
 import model.Player;
 
-import java.io.EOFException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +11,8 @@ public class PlayerDatabase {
     private final String FILE_PATH = "players.sar";
 
     public boolean registerPlayer(Player player, ObjectOutputStream outputStream) {
-        // Load existing players from the file
         List<Player> existingPlayers = loadPlayers();
 
-        // Check if the player already exists in the list
         if (existingPlayers.stream().anyMatch(p -> p.getNickname().equals(player.getNickname()))) {
             try {
                 outputStream.writeObject("Player with nickname " + player.getNickname() + " already exists.");
@@ -30,14 +23,16 @@ public class PlayerDatabase {
             return false;
         }
 
-        // Add the new player to the list
         existingPlayers.add(player);
-
-        // Save the updated player list back to the file
         savePlayers(existingPlayers);
 
         System.out.println("Player " + player.getNickname() + " registered successfully.");
         return true;
+    }
+
+    public Player getPlayer(String nickname) {
+        List<Player> players = loadPlayers();
+        return players.stream().filter(p -> p.getNickname().equals(nickname)).findFirst().orElse(null);
     }
 
     private List<Player> loadPlayers() {
@@ -48,9 +43,8 @@ public class PlayerDatabase {
                 try {
                     Player player = (Player) objectIn.readObject();
                     players.add(player);
-                    System.out.println(player.toString());
                 } catch (EOFException e) {
-                    break; // Reached end of file
+                    break;
                 }
             }
         } catch (IOException | ClassNotFoundException e) {

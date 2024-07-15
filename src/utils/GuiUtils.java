@@ -1,6 +1,7 @@
 package utils;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -18,9 +19,20 @@ public class GuiUtils {
         return button;
     }
 
-    public static JLabel createLabel(String text, int alignment) {
+    public static JLabel createLabel(String text, int alignment, Font font, Border border) {
         JLabel label = new JLabel(text, alignment);
+        if (font != null) {
+            label.setFont(font);
+        }
+        if (border != null) {
+            label.setBorder(border);
+        }
         return label;
+    }
+
+    // Overloaded method for cases where only text and alignment are provided
+    public static JLabel createLabel(String text, int alignment) {
+        return createLabel(text, alignment, null, null);
     }
 
     public static JTextField createTextField(int columns) {

@@ -1,112 +1,125 @@
 package gui;
 
 import model.Player;
-import services.PlayerService;
 import utils.GuiUtils;
 import utils.NumericDocumentFilter;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.AbstractDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * A GUI for player registration.
- */
-public class PlayerRegistration extends JFrame {
+public class PlayerRegistration extends JPanel {
     private JTextField nicknameField, nationalityField, ageField;
     private JPasswordField passwordField;
     private JButton photoButton, registerButton;
     private JLabel photoPreviewLabel;
     private byte[] photoData;
-    private PlayerService playerService;
 
-    /**
-     * Constructs a new PlayerRegistration window.
-     *
-     * @param out the ObjectOutputStream to be used for sending data to the server
-     */
-    public PlayerRegistration(ObjectOutputStream out) {
-        playerService = new PlayerService(out);
-        setTitle("Player Registration");
-        setSize(600, 300);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    public PlayerRegistration(MainWindow gui) {
+        setLayout(new GridBagLayout());
+        setBackground(new Color(255, 250, 240)); // Pastel background color
 
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        mainPanel.setBackground(new Color(255, 250, 240)); // Pastel background color
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); // Margins between components
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
 
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridLayout(5, 2, 10, 10));
-        inputPanel.setBackground(new Color(255, 250, 240)); // Pastel background color
-
-        inputPanel.add(GuiUtils.createLabel("Nickname: ", SwingConstants.RIGHT));
-        nicknameField = GuiUtils.createTextField(20);
-        inputPanel.add(nicknameField);
-
-        inputPanel.add(GuiUtils.createLabel("Password: ", SwingConstants.RIGHT));
-        passwordField = GuiUtils.createPasswordField(20);
-        inputPanel.add(passwordField);
-
-        inputPanel.add(GuiUtils.createLabel("Nationality: ", SwingConstants.RIGHT));
-        nationalityField = GuiUtils.createTextField(20);
-        inputPanel.add(nationalityField);
-
-        inputPanel.add(GuiUtils.createLabel("Age: ", SwingConstants.RIGHT));
-        ageField = GuiUtils.createTextField(20);
-        inputPanel.add(ageField);
-
-        inputPanel.add(GuiUtils.createLabel("Photo: ", SwingConstants.RIGHT));
-        photoButton = GuiUtils.createButton("Choose Photo", new Color(100, 149, 237), this::choosePhoto);
-        inputPanel.add(photoButton);
+        // Photo Preview Panel
+        JPanel photoPanel = new JPanel();
+        photoPanel.setLayout(new BoxLayout(photoPanel, BoxLayout.Y_AXIS)); // Set the layout to vertical
+        photoPanel.setBackground(new Color(255, 250, 240)); // Matching background color
+        photoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding around the photo panel
 
         photoPreviewLabel = new JLabel();
         photoPreviewLabel.setPreferredSize(new Dimension(100, 100));
-        JPanel previewPanel = new JPanel();
-        previewPanel.setLayout(new BoxLayout(previewPanel, BoxLayout.Y_AXIS)); // Set the layout to vertical
-        previewPanel.setBackground(new Color(255, 250, 240)); // Matching background color
+        photoPanel.add(GuiUtils.createLabel("Photo Preview:", SwingConstants.CENTER));
+        photoPanel.add(photoPreviewLabel);
 
-        previewPanel.add(GuiUtils.createLabel("Photo Preview:", SwingConstants.CENTER));
-        previewPanel.add(photoPreviewLabel);
+        gbc.gridheight = 6; // Span photo panel across multiple rows
+        gbc.anchor = GridBagConstraints.NORTH;
+        add(photoPanel, gbc);
 
-        // Add padding between the label and the photo preview
-        previewPanel.add(Box.createVerticalStrut(5));
+        // Input Fields
+        gbc.gridheight = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 1;
+        add(GuiUtils.createLabel("Nickname: ", SwingConstants.RIGHT), gbc);
 
-        registerButton = GuiUtils.createButton("Register",  new Color(240, 128, 128), this::registerPlayer);
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setBackground(new Color(255, 250, 240)); // Matching background color
-        buttonPanel.add(registerButton);
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.WEST;
+        nicknameField = GuiUtils.createTextField(20);
+        add(nicknameField, gbc);
 
-        mainPanel.add(inputPanel, BorderLayout.EAST);
-        mainPanel.add(previewPanel, BorderLayout.WEST);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        gbc.gridx = 1;
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.EAST;
+        add(GuiUtils.createLabel("Password: ", SwingConstants.RIGHT), gbc);
 
-        add(mainPanel);
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.WEST;
+        passwordField = GuiUtils.createPasswordField(20);
+        add(passwordField, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.EAST;
+        add(GuiUtils.createLabel("Nationality: ", SwingConstants.RIGHT), gbc);
+
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.WEST;
+        nationalityField = GuiUtils.createTextField(20);
+        add(nationalityField, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.EAST;
+        add(GuiUtils.createLabel("Age: ", SwingConstants.RIGHT), gbc);
+
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.WEST;
+        ageField = GuiUtils.createTextField(20);
+        ((AbstractDocument) ageField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
+        add(ageField, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.EAST;
+        add(GuiUtils.createLabel("Photo: ", SwingConstants.RIGHT), gbc);
+
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.WEST;
+        photoButton = GuiUtils.createButton("Choose Photo", new Color(100, 149, 237), this::choosePhoto);
+        photoButton.setPreferredSize(new Dimension(150, 25)); // Adjust width to prevent ellipsis
+        add(photoButton, gbc);
+
+        // Register Button
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 3;
+        gbc.insets = new Insets(20, 5, 5, 5); // Additional top margin for the register button
+        gbc.anchor = GridBagConstraints.CENTER; // Center the register button horizontally
+        registerButton = GuiUtils.createButton("Register", new Color(240, 128, 128), e -> registerPlayer(e, gui));
+        add(registerButton, gbc);
     }
 
     private void choosePhoto(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
-        // Create a FileNameExtensionFilter for image files
         FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
                 "Image files", "jpg", "jpeg", "png", "gif");
-
-        // Set the file filter for the JFileChooser
         fileChooser.setFileFilter(imageFilter);
         int result = fileChooser.showOpenDialog(null);
 
         if (result == JFileChooser.APPROVE_OPTION) {
             try {
-                // Get the selected file path
                 Path photoPath = fileChooser.getSelectedFile().toPath();
                 photoData = Files.readAllBytes(photoPath);
-
-                // Load and display the selected image
                 ImageIcon imageIcon = new ImageIcon(photoData);
-                // Scale the image to fit the label
                 Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 photoPreviewLabel.setIcon(new ImageIcon(image));
             } catch (IOException ex) {
@@ -115,7 +128,7 @@ public class PlayerRegistration extends JFrame {
         }
     }
 
-    private void registerPlayer(ActionEvent e) {
+    private void registerPlayer(ActionEvent e, MainWindow gui) {
         try {
             String nickname = nicknameField.getText();
             String password = new String(passwordField.getPassword());
@@ -123,16 +136,11 @@ public class PlayerRegistration extends JFrame {
             int age = Integer.parseInt(ageField.getText());
 
             Player player = new Player(nickname, password, nationality, age, photoData);
-            playerService.registerPlayer(player);
+            gui.getPlayerService().registerPlayer(player);
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(null, "Invalid age format. Please enter a valid integer.");
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    // Only for testing purposes
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new PlayerRegistration(null).setVisible(true));
     }
 }

@@ -3,7 +3,9 @@ package server;
 import io.PlayerDatabase;
 import model.Client;
 import model.Player;
+import org.w3c.dom.Document;
 import services.PlayerService;
+import utils.XMLReader;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,6 +13,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 
+/**
+ * Handles the communication with the client for player registration and login.
+ */
 public class ServerHandler extends Thread {
     private Socket connection;
     private List<Client> clientsList;
@@ -20,7 +25,7 @@ public class ServerHandler extends Thread {
     public ServerHandler(Socket connection, List<Client> clientsList) {
         this.connection = connection;
         this.clientsList = clientsList;
-        playerDatabase = new PlayerDatabase();
+        this.playerDatabase = new PlayerDatabase();
     }
 
     @Override
@@ -42,18 +47,25 @@ public class ServerHandler extends Thread {
             me.setOutputStream(outputStream);
 
             clientsList.add(me);
-            Player player;
 
             while (true) {
-                // Handle player registration
-                player = registerPlayer(inputStream, playerService);
-            }
+                // Read the XML string from the client
+                String xmlString = (String) inputStream.readObject();
+                Document xmlDoc = XMLReader.convertStringToDocument(xmlString);
+                String requestType = XMLReader.extractValueFromXML(xmlDoc, "//request/@type");
 
-            // TODO Handle lobby interactions
-            // handleLobbyInteraction(player, inputStream, outputStream);
+                // Handle player registration or login based on the request type
+                if ("register".equals(requestType)) {
+                    playerService.registerPlayer(xmlString);
+                } else if ("login".equals(requestType)) {
+                    playerService.loginPlayer(xmlString);
+                }
+            }
 
         } catch (ClassNotFoundException | IOException e) {
             System.err.println("Exception encountered " + e.getMessage() + " from " + e.getClass());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         } finally {
             try {
                 if (outputStream != null) outputStream.close();
@@ -65,18 +77,14 @@ public class ServerHandler extends Thread {
         }
     }
 
-    private Player registerPlayer(ObjectInputStream objectInputStream, PlayerService playerService) throws IOException, ClassNotFoundException {
-        // Receive XML string from client
-        String xmlString = (String) objectInputStream.readObject();
-        return playerService.registerPlayer(xmlString);
-    }
-
-    // TODO
+    // TODO: Implement logic to handle lobby interactions
     private void handleLobbyInteraction(Player player, ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) throws IOException {
-        // Implement logic to handle lobby interactions
         // Example: player joining lobby, leaving lobby, etc.
     }
 
+    /**
+     * Broadcasts the lobby information to all clients except the sender.
+     */
     public void broadcastLobby(Client sender) {
         String lobby = "Lobby:\n";
         for (Client client : clientsList) {
@@ -87,6 +95,9 @@ public class ServerHandler extends Thread {
         //sender.sendMessage(lobby);
     }
 
+    /**
+     * Removes a client from the client list.
+     */
     public void removeClient(Client client) {
         clientsList.remove(client);
     }
