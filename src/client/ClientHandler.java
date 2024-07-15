@@ -1,5 +1,10 @@
 package client;
 
+import enums.PanelType;
+import gui.MainWindow;
+import org.w3c.dom.Document;
+import utils.XMLReader;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
@@ -8,14 +13,16 @@ import java.io.ObjectInputStream;
  */
 public class ClientHandler extends Thread {
     private ObjectInputStream objectInputStream;
+    private MainWindow gui;
     private String isPlayerRegistered = "";
     private String isPlayerLogged = "";
 
     /**
      * Constructor to initialize the client handler with the client socket.
      */
-    public ClientHandler(ObjectInputStream objectInputStream) {
+    public ClientHandler(ObjectInputStream objectInputStream, MainWindow gui) {
         this.objectInputStream = objectInputStream;
+        this.gui = gui;
     }
 
     /**
@@ -25,19 +32,35 @@ public class ClientHandler extends Thread {
     @Override
     public void run() {
         try {
-
             Object response = objectInputStream.readObject();
             System.out.println("response -> " + response);
 
             if (response instanceof String) {
-                isPlayerRegistered = (String) response;
-                isPlayerLogged = (String) response;
-            }
+                // Parse XML response
+                Document xmlDoc = XMLReader.convertStringToDocument((String) response);
+                String status = XMLReader.extractValueFromXML(xmlDoc, "//status");
+                String message = XMLReader.extractValueFromXML(xmlDoc, "//message");
 
+                if (status != null && status.equals("success")) {
+                    if (message.contains("Registration successful")) {
+                        isPlayerRegistered = message;
+                        gui.showMessageDialog("Registration", message);
+                    } else if (message.contains("Login successful")) {
+                        isPlayerLogged = message;
+                        gui.showMessageDialog("Login", message);
+                    }
+                    gui.changePanel(PanelType.LOBBY);
+                } else if (status.equals("error"))  {
+                   gui.showMessageDialog("Error", message);
+                }
+
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

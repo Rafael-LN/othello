@@ -1,59 +1,44 @@
 package gui;
 
-import gui.commands.Command;
-import gui.commands.OpenLoginCommand;
-import gui.commands.OpenRegisterCommand;
+import enums.PanelType;
+import utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
-/**
- * A GUI for player authentication, allowing users to choose between login and registration.
- */
-public class PlayerAuthentication extends JFrame {
+public class PlayerAuthentication extends JPanel {
     private JButton loginButton, registerButton;
-    private Map<JButton, Command> buttonCommandMap = new HashMap<>();
 
-    /**
-     * Constructs a new PlayerAuthentication window.
-     *
-     * @param out the ObjectOutputStream to be used for sending data to the server
-     */
-    public PlayerAuthentication(ObjectOutputStream out) {
-        setTitle("Player Authentication");
-        setSize(400, 200);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    public PlayerAuthentication(MainWindow gui) {
+        setLayout(new GridBagLayout());
+        setBackground(new Color(255, 250, 240)); // Pastel background color
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        Font titleFont = new Font("Roboto", Font.BOLD, 16);
+        Font subtitleFont = new Font("Roboto", Font.PLAIN, 12);
 
-        JLabel titleLabel = new JLabel("Bem vindo ao Jogo Othello");
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0)); // Add space between title and buttons
-        panel.add(titleLabel, BorderLayout.NORTH);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); // Margins between components
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        JPanel buttonPanel = new JPanel();
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 50, 50, 50)); // Add padding
-        buttonPanel.setLayout(new GridLayout(1, 2, 20, 10));
+        JLabel titleLabel = GuiUtils.createLabel("Welcome to Othello Game", SwingConstants.CENTER, titleFont, null);
+        add(titleLabel, gbc);
 
-        loginButton = new JButton("Login");
-        loginButton.setPreferredSize(new Dimension(60, 20));
-        loginButton.addActionListener(e -> new OpenLoginCommand(this, out).execute());
-        buttonPanel.add(loginButton);
+        gbc.gridy++;
+        JLabel subtitleLabel = GuiUtils.createLabel("Please login or register to continue", SwingConstants.CENTER, subtitleFont, null);
+        add(subtitleLabel, gbc);
 
-        registerButton = new JButton("Register");
-        registerButton.setPreferredSize(new Dimension(60, 20));
-        registerButton.addActionListener(e -> new OpenRegisterCommand(this, out).execute());
-        buttonPanel.add(registerButton);
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        loginButton = GuiUtils.createButton("Login", new Color(173, 216, 230), e -> gui.changePanel(PanelType.LOGIN));
+        add(loginButton, gbc);
 
-        panel.add(buttonPanel, BorderLayout.CENTER);
-
-        add(panel);
-        setVisible(true);
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.WEST;
+        registerButton = GuiUtils.createButton("Register", new Color(240, 128, 128), e -> gui.changePanel(PanelType.REGISTRATION));
+        add(registerButton, gbc);
     }
-
 }
-

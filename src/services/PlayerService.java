@@ -3,14 +3,12 @@ package services;
 import io.PlayerDatabase;
 import model.Player;
 import org.w3c.dom.Document;
-import server.ServerHandler;
 import utils.XMLBuilder;
 import utils.XMLHandler;
 import utils.XMLReader;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Base64;
 
 /**
  * Service class for handling player operations such as registration and login.
@@ -19,6 +17,7 @@ import java.util.Base64;
  */
 public class PlayerService {
     private static final String PLAYER_XSD = "src/schemas/player.xsd";
+    private static final String LOGIN_XSD = "src/schemas/login.xsd";
     private ObjectOutputStream out;
     private PlayerDatabase playerDatabase;
 
@@ -43,17 +42,16 @@ public class PlayerService {
                 {"password", player.getPassword()},
                 {"nationality", player.getNationality()},
                 {"age", String.valueOf(player.getAge())},
-                {"photo",player.getBase64Photo()}
+                {"photo", player.getBase64Photo()}
         };
         Document playerXML = XMLBuilder.createXML("request", elements, new String[][]{{"type", "register"}});
         String playerXMLString = XMLHandler.documentToString(playerXML);
 
         // Send the XML string to the server
         out.writeObject(playerXMLString);
-
         out.flush();
 
-        System.out.println("Player registration successful:\n" + player);
+        System.out.println("Player registration sent:\n" + player);
     }
 
     /**
@@ -64,7 +62,7 @@ public class PlayerService {
      */
     public void loginPlayer(Player player) throws Exception {
         String[][] elements = {
-                {"nickname", player.getNickname()},
+                {"username", player.getNickname()},
                 {"password", player.getPassword()}
         };
         Document playerXML = XMLBuilder.createXML("request", elements, new String[][]{{"type", "login"}});
@@ -72,12 +70,9 @@ public class PlayerService {
 
         // Send the XML string to the server
         out.writeObject(playerXMLString);
-
-        // Send the player object to the server
-        out.writeObject(player);
         out.flush();
 
-        System.out.println("Player login successful:\n" + player);
+        System.out.println("Player login sent:\n" + player);
     }
 
     /**
@@ -102,7 +97,7 @@ public class PlayerService {
      * @return the registered Player object
      * @throws IOException if an I/O error occurs
      */
-    public Player registerPlayer(String xmlString) throws IOException {
+    public Player registerPlayer(String xmlString) throws Exception {
         Player player = null;
         try {
             // Convert XML string to Document
@@ -116,18 +111,69 @@ public class PlayerService {
                 // Register player in the database
                 if (playerDatabase.registerPlayer(player, out)) {
                     // Notify client that registration is successful
-                    out.writeObject("Registration successful. Welcome, " + player.getNickname() + "!");
-                    out.flush();
+                    sendResponse("success", "Registration successful. Welcome, " + player.getNickname() + "!");
                 }
             } else {
                 // Notify client that the XML is invalid
-                out.writeObject("Invalid XML format.");
-                out.flush();
+                sendResponse("error", "Invalid XML format.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            out.writeObject("Error processing registration.");
-            out.flush();
+            sendResponse("error", "Error processing registration.");
+        }
+        return player;
+    }
+
+    /**
+     * Sends a response to the client.
+     *
+     * @param status  the status of the response (e.g., "success" or "error")
+     * @param message the message to be sent
+     * @throws IOException if an I/O error occurs
+     */
+    private void sendResponse(String status, String message) throws Exception {
+        String[][] elements = {
+                {"status", status},
+                {"message", message}
+        };
+        Document responseXML = XMLBuilder.createXML("response", elements, new String[][]{{"type", "response"}});
+        String responseXMLString = XMLHandler.documentToString(responseXML);
+
+        // Send the XML string to the client
+        out.writeObject(responseXMLString);
+        out.flush();
+    }
+
+    /**
+     * Logs in a player by processing the XML string received from the client.
+     *
+     * @param xmlString the XML string received from the client
+     * @return the logged-in Player object
+     * @throws IOException if an I/O error occurs
+     */
+    public Player loginPlayer(String xmlString) throws Exception {
+        Player player = null;
+        try {
+            // Convert XML string to Document
+            Document xmlDoc = XMLReader.convertStringToDocument(xmlString);
+
+            // Validate XML against XSD
+            if (XMLReader.validateXML(xmlDoc, LOGIN_XSD)) {
+                // Extract Player object from XML using PlayerService
+                player = extractPlayerFromXML(xmlDoc);
+
+                // Validate player login
+                /*if (playerDatabase.validateLogin(player, out)) {
+                    // Notify client that login is successful
+                    sendResponse("success", "Login successful. Welcome, " + player.getNickname() + "!");
+                }*/
+            } else {
+                // Notify client that the XML is invalid
+                sendResponse("error", "Invalid XML format.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendResponse("error", "Error processing login.");
         }
         return player;
     }

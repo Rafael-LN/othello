@@ -1,5 +1,7 @@
 package client;
 
+import enums.PanelType;
+import gui.MainWindow;
 import gui.PlayerAuthentication;
 
 import java.io.*;
@@ -29,19 +31,18 @@ public class OthelloClient {
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
 
-            ClientHandler clientHandler = new ClientHandler(in);
-            clientHandler.start();
+            MainWindow gui = new MainWindow(out);
 
-            PlayerAuthentication playerAuthentication = new PlayerAuthentication(out);
-            playerAuthentication.setVisible(true);
+            ClientHandler clientHandler = new ClientHandler(in, gui);
+            clientHandler.start();
+            gui.setVisible(true);
 
             while (true) {
                 // Wait for the player to be registered and logged in
-                synchronized (clientHandler) {
-                    while (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
-                        clientHandler.wait();
-                    }
+
+                while (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
                 }
+
 
                 // Now the player is registered and logged in
                 // Proceed with the next steps, like entering the game lobby or starting a game
@@ -49,7 +50,7 @@ public class OthelloClient {
                 System.out.println("Player registered and logged in. Proceeding to the game lobby...");
                 // TODO: Add logic for game lobby or game start
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);
