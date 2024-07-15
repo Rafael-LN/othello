@@ -1,50 +1,40 @@
 package gui;
 
 import services.PlayerService;
-
-import java.awt.*;
 import utils.GuiUtils;
+
 import javax.swing.*;
-import java.io.ObjectOutputStream;
+import java.awt.*;
 
-public class Lobby extends JFrame {
+public class Lobby extends JPanel {
 
-    private PlayerService playerService;
-    private JFrame lobby;
     private JButton playButton;
 
-    /**
-     * Launch the application.
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    Lobby window = new Lobby(null);
-                    window.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+    public Lobby(MainWindow gui) {
+        setLayout(new GridBagLayout());
+        setBackground(new Color(255, 250, 240)); // Pastel background color
 
-    /**
-     * Create the application.
-     */
-    public Lobby(ObjectOutputStream out) {
-        playerService = new PlayerService(out);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10); // Margins between components
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridwidth = 2;
 
-        setTitle("Lobby");
-        setBounds(100, 100, 500, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Welcome Label
+        JLabel welcomeLabel = new JLabel("Welcome player");
+        welcomeLabel.setFont(new Font("Roboto", Font.BOLD, 16));
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        add(welcomeLabel, gbc);
 
-        JLabel lobbyLabel = new JLabel("Lobby");
-        lobbyLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lobbyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        getContentPane().add(lobbyLabel, BorderLayout.NORTH);
+        // Player List
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
 
-        JList<String> playerList = new JList<String>();
+        JList<String> playerList = new JList<>();
         playerList.setModel(new AbstractListModel<String>() {
             private static final long serialVersionUID = 1L;
             String[] values = new String[] {"player1", "player2"};
@@ -55,7 +45,15 @@ public class Lobby extends JFrame {
                 return values[index];
             }
         });
-        getContentPane().add(playerList, BorderLayout.CENTER);
+        JScrollPane playerListScrollPane = new JScrollPane(playerList);
+        add(playerListScrollPane, gbc);
+
+        // Play Button
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
 
         playButton = GuiUtils.createButton("Play", new Color(255, 125, 0), e -> {
             try {
@@ -65,7 +63,6 @@ public class Lobby extends JFrame {
                 throw new RuntimeException(ex);
             }
         });
-        getContentPane().add(playButton, BorderLayout.SOUTH);
+        add(playButton, gbc);
     }
-
 }
