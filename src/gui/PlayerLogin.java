@@ -14,7 +14,6 @@ public class PlayerLogin extends JPanel {
     private JButton loginButton, registerButton;
     private JTextField usernameField;
     private JPasswordField passwordField;
-    private PlayerService playerService;
 
     public PlayerLogin(MainWindow gui) {
         setLayout(new GridBagLayout());
@@ -79,7 +78,7 @@ public class PlayerLogin extends JPanel {
                     String password = new String(passwordField.getPassword());
 
                     Player player = new Player(username, password);
-                    playerService.loginPlayer(player);
+                    gui.getPlayerService().loginPlayer(player);
                     JOptionPane.showMessageDialog(this, "Login button clicked with username: " + username);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
