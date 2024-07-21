@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.example.org/communications"
+           xmlns="http://www.example.org/communications"
+           xmlns:login="http://www.example.org/login"
+           xmlns:play="http://www.example.org/play"
+           xmlns:player="http://www.example.org/player"
+           xmlns:lobby="http://www.example.org/lobby"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <!-- Import the individual XSD files -->
+    <xs:import namespace="http://www.example.org/login" schemaLocation="login.xsd"/>
+    <xs:import namespace="http://www.example.org/play" schemaLocation="play.xsd"/>
+    <xs:import namespace="http://www.example.org/player" schemaLocation="player.xsd"/>
+    <xs:import namespace="http://www.example.org/lobby" schemaLocation="lobby.xsd"/>
+
+    <!-- Root element for requests -->
+    <xs:element name="request">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element ref="login:loginRequest"/>
+                <xs:element ref="play:playRequest"/>
+                <xs:element ref="player:playerRequest"/>
+                <xs:element ref="lobby:enterLobbyRequest"/>
+            </xs:choice>
+            <xs:attribute name="type" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Root element for responses -->
+    <xs:element name="response">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element ref="login:loginResponse"/>
+                <xs:element ref="play:playResponse"/>
+                <xs:element ref="player:playerResponse"/>
+                <xs:element ref="lobby:updateLobbyResponse"/>
+            </xs:choice>
+            <xs:attribute name="type" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
