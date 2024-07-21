@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.example.org/lobby"
+           xmlns="http://www.example.org/lobby"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <!-- Element for entering the lobby -->
+    <xs:element name="enterLobbyRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+            </xs:sequence>
+            <xs:attribute name="type" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Element for the lobby update -->
+    <xs:element name="updateLobbyResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="players" type="playersType"/>
+            </xs:sequence>
+            <xs:attribute name="type" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Complex type for players -->
+    <xs:complexType name="playersType">
+        <xs:sequence>
+            <xs:element name="player" type="playerType" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Complex type for a player -->
+    <xs:complexType name="playerType">
+        <xs:sequence>
+            <xs:element name="username" type="xs:string"/>
+            <xs:element name="status" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
