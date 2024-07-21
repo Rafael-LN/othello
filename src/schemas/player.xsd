@@ -1,6 +1,9 @@
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.example.org/player"
+           xmlns="http://www.example.org/player">
 
-    <xs:element name="request">
+    <xs:element name="playerRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="nickname" type="xs:string"/>
@@ -13,7 +16,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="response">
+    <xs:element name="playerResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="status" type="xs:string"/>
