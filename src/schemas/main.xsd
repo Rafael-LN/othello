@@ -6,6 +6,7 @@
            xmlns:play="http://www.example.org/play"
            xmlns:player="http://www.example.org/player"
            xmlns:lobby="http://www.example.org/lobby"
+           xmlns:editInfo="http://www.example.org/editInfo"
            elementFormDefault="qualified"
            attributeFormDefault="unqualified">
 
@@ -14,6 +15,7 @@
     <xs:import namespace="http://www.example.org/play" schemaLocation="play.xsd"/>
     <xs:import namespace="http://www.example.org/player" schemaLocation="player.xsd"/>
     <xs:import namespace="http://www.example.org/lobby" schemaLocation="lobby.xsd"/>
+    <xs:import namespace="http://www.example.org/editInfo" schemaLocation="editInfo.xsd"/>
 
     <!-- Root element for requests -->
     <xs:element name="request">
@@ -23,6 +25,7 @@
                 <xs:element ref="play:playRequest"/>
                 <xs:element ref="player:playerRequest"/>
                 <xs:element ref="lobby:enterLobbyRequest"/>
+                <xs:element ref="editInfo:editInfoRequest"/>
             </xs:choice>
             <xs:attribute name="type" type="xs:string" use="required"/>
         </xs:complexType>
@@ -36,6 +39,7 @@
                 <xs:element ref="play:playResponse"/>
                 <xs:element ref="player:playerResponse"/>
                 <xs:element ref="lobby:updateLobbyResponse"/>
+                <xs:element ref="editInfo:editInfoResponse"/>
             </xs:choice>
             <xs:attribute name="type" type="xs:string" use="required"/>
         </xs:complexType>
