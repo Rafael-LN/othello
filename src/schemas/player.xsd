@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            targetNamespace="http://www.example.org/player"
-           xmlns="http://www.example.org/player">
+           xmlns="http://www.example.org/player"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
 
     <xs:element name="playerRequest">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="nickname" type="xs:string"/>
-                <xs:element name="password" type="xs:string"/>
-                <xs:element name="nationality" type="xs:string"/>
-                <xs:element name="age" type="xs:int"/>
-                <xs:element name="photo" type="xs:base64Binary"/>
+                <xs:element name="playerInfo" type="playerInfoType"/>
             </xs:sequence>
             <xs:attribute name="type" type="xs:string" use="required"/>
         </xs:complexType>
@@ -25,5 +23,16 @@
             <xs:attribute name="type" type="xs:string" use="required"/>
         </xs:complexType>
     </xs:element>
+
+    <!-- Complex type for player information -->
+    <xs:complexType name="playerInfoType">
+        <xs:sequence>
+            <xs:element name="nickname" type="xs:string"/>
+            <xs:element name="password" type="xs:string"/>
+            <xs:element name="nationality" type="xs:string"/>
+            <xs:element name="age" type="xs:int"/>
+            <xs:element name="photo" type="xs:base64Binary"/>
+        </xs:sequence>
+    </xs:complexType>
 
 </xs:schema>
