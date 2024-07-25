@@ -4,7 +4,7 @@
            xmlns="http://www.example.org/editInfo"
            xmlns:player="http://www.example.org/player"
            elementFormDefault="qualified"
-           attributeFormDefault="unqualified">
+>
 
     <!-- Import player.xsd to reuse playerInfoType -->
     <xs:import namespace="http://www.example.org/player" schemaLocation="player.xsd"/>

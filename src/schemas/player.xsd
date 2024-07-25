@@ -3,7 +3,7 @@
            targetNamespace="http://www.example.org/player"
            xmlns="http://www.example.org/player"
            elementFormDefault="qualified"
-           attributeFormDefault="unqualified">
+>
 
     <xs:element name="playerRequest">
         <xs:complexType>

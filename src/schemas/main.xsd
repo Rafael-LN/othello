@@ -8,7 +8,7 @@
            xmlns:lobby="http://www.example.org/lobby"
            xmlns:editInfo="http://www.example.org/editInfo"
            elementFormDefault="qualified"
-           attributeFormDefault="unqualified">
+>
 
     <!-- Import the individual XSD files -->
     <xs:import namespace="http://www.example.org/login" schemaLocation="login.xsd"/>

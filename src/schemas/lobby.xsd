@@ -3,7 +3,7 @@
            targetNamespace="http://www.example.org/lobby"
            xmlns="http://www.example.org/lobby"
            elementFormDefault="qualified"
-           attributeFormDefault="unqualified">
+>
 
     <!-- Element for entering the lobby -->
     <xs:element name="enterLobbyRequest">
