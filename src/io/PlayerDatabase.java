@@ -7,13 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerDatabase {
-
     private final String FILE_PATH = "players.sar";
+    private List<Player> players = new ArrayList<>();
 
     public boolean registerPlayer(Player player, ObjectOutputStream outputStream) {
-        List<Player> existingPlayers = loadPlayers();
-
-        if (existingPlayers.stream().anyMatch(p -> p.getNickname().equals(player.getNickname()))) {
+        if (players.stream().anyMatch(p -> p.getNickname().equals(player.getNickname()))) {
             try {
                 outputStream.writeObject("Player with nickname " + player.getNickname() + " already exists.");
                 System.out.println("Player with nickname " + player.getNickname() + " already exists.");
@@ -23,8 +21,8 @@ public class PlayerDatabase {
             return false;
         }
 
-        existingPlayers.add(player);
-        savePlayers(existingPlayers);
+        players.add(player);
+        savePlayers();
 
         System.out.println("Player " + player.getNickname() + " registered successfully.");
         return true;
@@ -53,7 +51,7 @@ public class PlayerDatabase {
         return players;
     }
 
-    private void savePlayers(List<Player> players) {
+    private void savePlayers() {
         try (FileOutputStream fileOut = new FileOutputStream(FILE_PATH);
              ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
             for (Player player : players) {
@@ -66,5 +64,22 @@ public class PlayerDatabase {
 
     public boolean validateLogin(Player player) {
         return getPlayer(player.getNickname()) != null;
+    }
+
+    public void updatePlayer(Player updatedPlayer) {
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            if (player.getNickname().equals(updatedPlayer.getNickname())) {
+                player.setPassword(updatedPlayer.getPassword());
+                player.setNationality(updatedPlayer.getNationality());
+                player.setAge(updatedPlayer.getAge());
+                player.setPhotoData(updatedPlayer.getPhotoData());
+
+                players.set(i, player);
+                break;
+            }
+        }
+
+        savePlayers();
     }
 }

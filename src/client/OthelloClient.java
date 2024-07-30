@@ -31,20 +31,17 @@ public class OthelloClient {
 
             MainWindow gui = new MainWindow(out);
 
-            ClientHandler clientHandler = new ClientHandler(in, gui);
+            ClientHandler clientHandler = new ClientHandler(in, out, gui);
             clientHandler.start();
             gui.setVisible(true);
 
             while (true) {
                 // Wait for the player to be registered and logged in
-
                 while (!clientHandler.isPlayerRegistered() || !clientHandler.isPlayerLogged()) {
                 }
 
-
                 // Now the player is registered and logged in
                 // Proceed with the next steps, like entering the game lobby or starting a game
-                // Example:
                 System.out.println("Player registered and logged in. Proceeding to the game lobby...");
 
                 // After exiting the lobby, the game should start

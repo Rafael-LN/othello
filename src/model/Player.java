@@ -14,6 +14,7 @@ public class Player implements Serializable {
     private long timeSpent; // Time spent in milliseconds
     private long startTime; // Start time
     private long endTime; // End time
+    private boolean isOnline = false;
 
     public Player(String nickname, String password, String nationality, int age, byte[] photoData) {
         this.nickname = nickname;
@@ -131,5 +132,13 @@ public class Player implements Serializable {
                 ", losses=" + losses + '\'' +
                 ", timeSpent=" + timeSpent + '\'' +
                 '}';
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
     }
 }

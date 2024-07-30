@@ -3,13 +3,13 @@ package services;
 import io.PlayerDatabase;
 import model.Player;
 import org.w3c.dom.Document;
-import utils.XMLBuilder;
-import utils.XMLHandler;
+import org.w3c.dom.Element;
+import utils.XMLDoc;
 import utils.XMLReader;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.List;
+import java.util.Base64;
 
 /**
  * Service class for handling player operations such as registration and login.
@@ -19,6 +19,7 @@ import java.util.List;
 public class PlayerService {
     private static final String PLAYER_XSD = "src/schemas/player.xsd";
     private static final String LOGIN_XSD = "src/schemas/login.xsd";
+    private static final String EDIT_XSD = "src/schemas/editInfo.xsd";
     private ObjectOutputStream out;
     private PlayerDatabase playerDatabase;
 
@@ -38,6 +39,7 @@ public class PlayerService {
      * @throws Exception if an error occurs during the registration process
      */
     public void registerPlayer(Player player) throws Exception {
+        String namespace = "http://www.example.org/player";
         String[][] elements = {
                 {"nickname", player.getNickname()},
                 {"password", player.getPassword()},
@@ -45,14 +47,27 @@ public class PlayerService {
                 {"age", String.valueOf(player.getAge())},
                 {"photo", player.getBase64Photo()}
         };
-        Document playerXML = XMLBuilder.createXML("request", elements, new String[][]{{"type", "register"}});
-        String playerXMLString = XMLHandler.documentToString(playerXML);
+
+        // Create the XML document
+        Document doc = XMLDoc.createDocument();
+        Element root = XMLDoc.createRootElement(doc, "playerRequest", namespace);
+        root.setAttribute("type", "requestType");
+
+        // Create the playerInfo element and append child elements
+        Element playerInfo = doc.createElement("playerInfo");
+        for (String[] element : elements) {
+            playerInfo.appendChild(XMLDoc.createElement(doc, element[0], element[1]));
+        }
+        root.appendChild(playerInfo);
+
+        // Convert the document to a string
+        String playerXMLString = XMLDoc.documentToString(doc);
 
         // Send the XML string to the server
         out.writeObject(playerXMLString);
         out.flush();
 
-        System.out.println("Player registration sent:\n" + player);
+        System.out.println("Player registration sent:\n" + playerXMLString);
     }
 
     /**
@@ -62,12 +77,24 @@ public class PlayerService {
      * @throws Exception if an error occurs during the login process
      */
     public void loginPlayer(Player player) throws Exception {
+        String namespace = "http://www.example.org/login";
         String[][] elements = {
                 {"username", player.getNickname()},
                 {"password", player.getPassword()}
         };
-        Document playerXML = XMLBuilder.createXML("request", elements, new String[][]{{"type", "login"}});
-        String playerXMLString = XMLHandler.documentToString(playerXML);
+
+        // Create the XML document
+        Document doc = XMLDoc.createDocument();
+        Element root = XMLDoc.createRootElement(doc, "loginRequest", namespace);
+        root.setAttribute("type", "login");
+
+        // Append child elements to the root
+        for (String[] element : elements) {
+            root.appendChild(XMLDoc.createElement(doc, element[0], element[1]));
+        }
+
+        // Convert the document to a string
+        String playerXMLString = XMLDoc.documentToString(doc);
 
         // Send the XML string to the server
         out.writeObject(playerXMLString);
@@ -80,16 +107,16 @@ public class PlayerService {
      * @param xmlDoc the XML document
      * @return the extracted Player object
      */
-    public Player extractPlayerFromXML(Document xmlDoc) {
+    private Player extractPlayerFromXML(Document xmlDoc) {
         String nickname = XMLReader.extractValueFromXML(xmlDoc, "//nickname");
         String password = XMLReader.extractValueFromXML(xmlDoc, "//password");
         String nationality = XMLReader.extractValueFromXML(xmlDoc, "//nationality");
         int age = Integer.parseInt(XMLReader.extractValueFromXML(xmlDoc, "//age"));
-        byte[] photo = java.util.Base64.getDecoder().decode(XMLReader.extractValueFromXML(xmlDoc, "//photo"));
+        byte[] photo = Base64.getDecoder().decode(XMLReader.extractValueFromXML(xmlDoc, "//photo"));
         return new Player(nickname, password, nationality, age, photo);
     }
 
-    public Player extractLoginFromXML(Document xmlDoc) {
+    private Player extractLoginFromXML(Document xmlDoc) {
         String username = XMLReader.extractValueFromXML(xmlDoc, "//username");
         String password = XMLReader.extractValueFromXML(xmlDoc, "//password");
         return new Player(username, password);
@@ -137,12 +164,24 @@ public class PlayerService {
      * @throws IOException if an I/O error occurs
      */
     private void sendResponse(String status, String message) throws Exception {
+        String namespace = "http://www.example.org/player";
         String[][] elements = {
                 {"status", status},
                 {"message", message}
         };
-        Document responseXML = XMLBuilder.createXML("response", elements, new String[][]{{"type", "response"}});
-        String responseXMLString = XMLHandler.documentToString(responseXML);
+
+        // Create the XML document
+        Document doc = XMLDoc.createDocument();
+        Element root = XMLDoc.createRootElement(doc, "playerResponse", namespace);
+        root.setAttribute("type", "response");
+
+        // Append child elements to the root
+        for (String[] element : elements) {
+            root.appendChild(XMLDoc.createElement(doc, element[0], element[1]));
+        }
+
+        // Convert the document to a string
+        String responseXMLString = XMLDoc.documentToString(doc);
 
         // Send the XML string to the client
         out.writeObject(responseXMLString);
@@ -183,7 +222,32 @@ public class PlayerService {
         return player;
     }
 
-    public List<Player> getPlayers() {
-        return playerDatabase.loadPlayers();
+    /**
+     * Edits a player's information by processing the XML string received from the client.
+     *
+     * @param xmlString the XML string received from the client
+     * @throws Exception if an error occurs during the process
+     */
+    public void editPlayerInfo(String xmlString) throws Exception {
+        try {
+            // Convert XML string to Document
+            Document xmlDoc = XMLReader.convertStringToDocument(xmlString);
+
+            // Validate XML against XSD
+            if (XMLReader.validateXML(xmlDoc, EDIT_XSD)) {
+                Player editedPlayer = extractPlayerFromXML(xmlDoc);
+
+                playerDatabase.updatePlayer(editedPlayer);
+
+                // Notify client that the information update is successful
+                sendResponse("success", "Information updated successfully");
+            } else {
+                // Notify client that the XML is invalid
+                sendResponse("error", "Invalid XML format.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendResponse("error", "Error processing information update.");
+        }
     }
 }

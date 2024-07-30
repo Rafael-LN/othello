@@ -4,8 +4,8 @@ import io.PlayerDatabase;
 import model.Client;
 import model.Player;
 import org.w3c.dom.Document;
+import services.LobbyService;
 import services.PlayerService;
-import utils.XMLReader;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,6 +21,7 @@ public class ServerHandler extends Thread {
     private List<Client> clientsList;
     private PlayerDatabase playerDatabase;
     private PlayerService playerService;
+    private LobbyService lobbyService;
 
     public ServerHandler(Socket connection, List<Client> clientsList) {
         this.connection = connection;
@@ -39,6 +40,7 @@ public class ServerHandler extends Thread {
             inputStream = new ObjectInputStream(connection.getInputStream());
             outputStream = new ObjectOutputStream(connection.getOutputStream());
             playerService = new PlayerService(outputStream, playerDatabase);
+            lobbyService = new LobbyService(outputStream, playerDatabase);
 
             Client me = new Client();
             me.setName("Cli-" + this.getId());
@@ -47,6 +49,7 @@ public class ServerHandler extends Thread {
             me.setOutputStream(outputStream);
 
             clientsList.add(me);
+            Player player = null;
 
             while (true) {
                 // Read the XML string from the client
@@ -54,11 +57,29 @@ public class ServerHandler extends Thread {
                 Document xmlDoc = XMLReader.convertStringToDocument(xmlString);
                 String requestType = XMLReader.extractValueFromXML(xmlDoc, "//request/@type");
 
-                // Handle player registration or login based on the request type
-                if ("register".equals(requestType)) {
-                    playerService.registerPlayer(xmlString);
-                } else if ("login".equals(requestType)) {
-                    playerService.loginPlayer(xmlString);
+                // Handle requests based on the request type
+                switch (requestType) {
+                    case "register":
+                        player = playerService.registerPlayer(xmlString);
+                        break;
+                    case "login":
+                        player = playerService.loginPlayer(xmlString);
+                        break;
+                    case "editInfo":
+                        playerService.editPlayerInfo(xmlString);
+                        break;
+                    case "enterLobby":
+                        if (me.getPlayer() != null) {
+                            lobbyService.enterLobby(me.getPlayer());
+                        }
+                        break;
+                    // Add additional cases for other request types
+                    default:
+                        System.out.println("Unknown request type: " + requestType);
+                }
+
+                if (player != null) {
+                    me.setPlayer(player);
                 }
             }
 
@@ -77,22 +98,18 @@ public class ServerHandler extends Thread {
         }
     }
 
-    // TODO: Implement logic to handle lobby interactions
-    private void handleLobbyInteraction(Player player, ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) throws IOException {
-        // Example: player joining lobby, leaving lobby, etc.
-    }
-
     /**
      * Broadcasts the lobby information to all clients except the sender.
      */
-    public void broadcastLobby(Client sender) {
-        String lobby = "Lobby:\n";
+    public void broadcastLobby() {
+       /* String lobbyMessage = lobbyService.createLobbyMessage();
         for (Client client : clientsList) {
-            if (!client.equals(sender)) {
-                lobby += client.getPlayer() + "\n";
+            try {
+                client.getOutputStream().writeObject(lobbyMessage);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
-        //sender.sendMessage(lobby);
+        }*/
     }
 
     /**
